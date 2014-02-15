@@ -10,9 +10,9 @@ Running on OpenShift
 
 Create an account at http://openshift.redhat.com/
 
-Create a python-2.6 application
+Create a python application
 
-    rhc app create -a flask -t python-2.6
+    rhc app create flask python-2.6
 
 Add this upstream flask repo
 
