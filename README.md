@@ -30,7 +30,7 @@ That's it, you can now checkout your application at:
 
 ------------------------------
 
-To get more log messages in your openshift logs please add the following line to your code
+To get more log messages in your OpenShift logs please add the following line to your code
 
 app.config['PROPAGATE_EXCEPTIONS'] = True  
 
