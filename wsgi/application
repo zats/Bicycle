@@ -14,7 +14,7 @@ os.environ['PYTHON_EGG_CACHE'] = os.path.join(PY_CACHE)
 virtualenv = os.path.join(virtenv, 'bin/activate_this.py')
 
 try:
-    execfile(virtualenv, dict(__file__=virtualenv))
+    exec(open(virtualenv).read(), dict(__file__=virtualenv))
 except IOError:
     pass
 
