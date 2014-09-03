@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask import Flask, request, flash, url_for, redirect, render_template, abort
 
