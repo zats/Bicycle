@@ -17,11 +17,15 @@ class Station(db.Model):
     capacity = db.Column(db.Integer)
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
 
-    def __init__(self, station_id, address, description, available_bicycles, available_poles, capacity):
+    def __init__(self, station_id, address, description, latitude, longitude, available_bicycles, available_poles, capacity):
         self.station_id = station_id
         self.address = address
         self.description = description
+        self.latitude = latitude
+        self.longitude = longitude
         self.available_bicycles = available_bicycles
         self.available_poles = available_poles
         self.capacity = capacity
@@ -36,7 +40,7 @@ def hello():
 
 @app.route("/new")
 def new():
-    station = Station("station_id", "Dizingoff 22", "Across the street from whatever", 10, 5, 15)
+    station = Station("station_id", "Dizingoff 22", "Across the street from whatever", 33.3333, 34.12345, 10, 5, 15)
     db.session.add(station)
     db.session.commit()
     return redirect(url_for('hello'))
