@@ -34,9 +34,12 @@ class Station(db.Model):
 def hello():
     return "Hello World!"
 
-@app.route("/env")
-def env():
-    return ""
+@app.route("/new")
+def new():
+    station = Station("station_id", "Dizingoff 22", "Across the street from whatever", 10, 5, 15)
+    db.session.add(station)
+    db.session.commit()
+    return redirect(url_for('hello'))
 
 if __name__ == "__main__":
     app.run()
