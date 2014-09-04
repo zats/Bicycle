@@ -15,7 +15,8 @@ db = SQLAlchemy(app)
 
 class Station(db.Model):
     __tablename__ = 'stations'
-    id = db.Column('station_id', db.String, primary_key=True)
+    id = db.Column('station_id', db.Integer, primary_key=True)
+    station_id = db.Column(db.String)
     address = db.Column(db.String)
     description = db.Column(db.String)
     available_bicycles = db.Column(db.Integer)
@@ -27,7 +28,7 @@ class Station(db.Model):
     updated_at = db.Column(db.DateTime)
 
     def __init__(self, dictionary):
-        expected_keys = ['id', 'address', 'description', 'latitude', 'longitude', 'available_bicycles',
+        expected_keys = ['station_id', 'address', 'description', 'latitude', 'longitude', 'available_bicycles',
                          'available_poles', 'capacity']
         for key in expected_keys:
             setattr(self, key, dictionary[key])
@@ -49,7 +50,8 @@ class Station(db.Model):
 
 class StationInfo(db.Model):
     __tablename__ = 'station_infos'
-    id = db.Column('station_id', db.String, primary_key=True)
+    id = db.Column('station_info_id', db.Integer, primary_key=True)
+    station_id = db.Column(db.String)
     available_bicycles = db.Column(db.Integer)
     available_poles = db.Column(db.Integer)
     samples_count = db.Column(db.Integer)
@@ -58,7 +60,7 @@ class StationInfo(db.Model):
     updated_at = db.Column(db.DateTime)
 
     def __init__(self, dictionary, hour_of_week):
-        self.id = dictionary['id']
+        self.station_id = dictionary['station_id']
         self.available_bicycles = dictionary['available_bicycles']
         self.available_poles = dictionary['available_poles']
         self.hour_of_week = hour_of_week
@@ -84,10 +86,10 @@ def new():
     b1 = randint(0, 20)
     b2 = randint(0, 15)
     dictionary = {
-        'telofun::1': {'id': 'telofun::1', 'address': 'King George 12',
+        'telofun::1': {'station_id': 'telofun::1', 'address': 'King George 12',
                        'description': 'To the right from the falafel booth', 'latitude': 33.423, 'longitude': 44.235,
                        'available_bicycles': b1, 'available_poles': 20 - b1, 'capacity': 20},
-        'telofun::2': {'id': 'telofun::2', 'address': 'Dizengoff 31', 'description': 'Next to the fountain',
+        'telofun::2': {'station_id': 'telofun::2', 'address': 'Dizengoff 31', 'description': 'Next to the fountain',
                        'latitude': 33.123, 'longitude': 44.241,
                        'available_bicycles': b2, 'available_poles': 15 - b2, 'capacity': 15}
     }
@@ -102,7 +104,7 @@ def update_with_dictionary(dictionary):
 
     # Station
     dictionary_copy = dictionary.copy()
-    fetched_stations = Station.query.filter(Station.id.in_(station_ids))
+    fetched_stations = Station.query.filter(Station.station_id.in_(station_ids))
 
     # Update existent
     for station in fetched_stations:
@@ -120,7 +122,7 @@ def update_with_dictionary(dictionary):
 
     # Station info
     dictionary_copy = dictionary.copy()
-    fetched_station_infos = StationInfo.query.filter(StationInfo.id.in_(station_ids),
+    fetched_station_infos = StationInfo.query.filter(StationInfo.station_id.in_(station_ids),
                                                      StationInfo.hour_of_week == hour_of_week)
 
     # Update existent
@@ -129,7 +131,7 @@ def update_with_dictionary(dictionary):
         station_info.update_with_dictionary(station_dictionary)
         logging.error('updating station info for \"' + station_info.id + '\"')
         # db.session.add(station_info)
-        del dictionary_copy[station.id]
+        del dictionary_copy[station.station_id]
 
     # Create
     for station_id, station_dictionary in dictionary_copy.items():
