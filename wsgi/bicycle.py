@@ -57,22 +57,18 @@ class StationInfo(db.Model):
     updated_at = db.Column(db.DateTime)
 
     def __init__(self, dictionary):
-        expected_keys = ['id', 'available_bicycles', 'available_poles', 'samples_count', 'hour_of_week']
+        expected_keys = ['id', 'available_bicycles', 'available_poles', 'hour_of_week']
         for key in expected_keys:
             setattr(self, key, dictionary[key])
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
+        self.samples_count = 1
 
     def update_with_dictionary(self, dictionary):
-        expected_keys = ['available_bicycles', 'available_poles', 'samples_count', 'hour_of_week']
-        did_update = False
-        for key in expected_keys:
-            if (key in dictionary) and (getattr(self, key, None) != dictionary[key]):
-                setattr(self, key, dictionary[key])
-                did_update = True
-        if did_update:
-            self.updated_at = datetime.utcnow()
-        return did_update
+        self.samples_count += 1
+        self.available_bicycles += (dictionary['available_bicycles'] - self.available_bicycles) / float(self.samples_count)
+        self.available_poles += (dictionary['available_poles'] - self.available_poles) / float(self.samples_count)
+        self.updated_at = datetime.utcnow()
 
 
 @app.route("/")
