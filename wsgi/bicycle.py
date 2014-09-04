@@ -97,7 +97,7 @@ def new():
 
 
 def update_with_dictionary(dictionary):
-    logging.error('Hello')
+    logging.info('Hello')
 
     station_ids = dictionary.keys()
     hour_of_week = current_hour_of_week()
@@ -108,16 +108,16 @@ def update_with_dictionary(dictionary):
 
     # Update existent
     for station in fetched_stations:
-        station_dictionary = dictionary_copy[station.id];
+        station_dictionary = dictionary_copy[station.station_id];
         station.update_with_dictionary(station_dictionary)
-        logging.error('updating station for \"' + station.id + '\"')
+        logging.info('updating station for \"' + station.station_id + '\"')
         # db.session.add(station)
-        del dictionary_copy[station.id]
+        del dictionary_copy[station.station_id]
 
     # Create
     for station_id, station_dictionary in dictionary_copy.items():
         station = Station(station_dictionary)
-        logging.error('creating station for \"' + station_id + '\"')
+        logging.info('creating station for \"' + station_id + '\"')
         db.session.add(station)
 
     # Station info
@@ -127,16 +127,16 @@ def update_with_dictionary(dictionary):
 
     # Update existent
     for station_info in fetched_station_infos:
-        station_dictionary = dictionary_copy[station_info.id]
+        station_dictionary = dictionary_copy[station_info.station_id]
         station_info.update_with_dictionary(station_dictionary)
-        logging.error('updating station info for \"' + station_info.id + '\"')
+        logging.info('updating station info for \"' + station_info.station_id + '\"')
         # db.session.add(station_info)
         del dictionary_copy[station.station_id]
 
     # Create
     for station_id, station_dictionary in dictionary_copy.items():
         station_info = StationInfo(station_dictionary, hour_of_week)
-        logging.error('creating station info for \"' + station_id + '\"')
+        logging.info('creating station info for \"' + station_id + '\"')
         db.session.add(station_info)
 
     db.session.commit()
