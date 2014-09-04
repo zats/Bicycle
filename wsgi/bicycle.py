@@ -6,6 +6,7 @@ import time
 
 CRON_INTERVAL = 2
 
+
 app = Flask(__name__)
 app.config.from_pyfile('app.cfg')
 db = SQLAlchemy(app)
@@ -25,7 +26,7 @@ class Station(db.Model):
     updated_at = db.Column(db.DateTime)
 
     def __init__(self, dictionary):
-        expected_keys = ['station_id', 'address', 'description', 'latitude', 'longitude', 'available_bicycles',
+        expected_keys = ['id', 'address', 'description', 'latitude', 'longitude', 'available_bicycles',
                          'available_poles', 'capacity']
         for key in expected_keys:
             setattr(self, key, dictionary[key])
@@ -56,7 +57,7 @@ class StationInfo(db.Model):
     updated_at = db.Column(db.DateTime)
 
     def __init__(self, dictionary):
-        expected_keys = ['station_id', 'available_bicycles', 'available_poles', 'samples_count', 'hour_of_week']
+        expected_keys = ['id', 'available_bicycles', 'available_poles', 'samples_count', 'hour_of_week']
         for key in expected_keys:
             setattr(self, key, dictionary[key])
         self.created_at = datetime.utcnow()
