@@ -97,7 +97,7 @@ def new():
 
 def update_with_dictionary(dictionary):
     station_ids = dictionary.keys()
-    hour_of_week = date_to_hour_of_week(datetime.utcnow())
+    hour_of_week = current_hour_of_week()
 
     # Station
     dictionary_copy = dictionary.copy()
@@ -133,8 +133,8 @@ def update_with_dictionary(dictionary):
     db.session.commit()
 
 
-def date_to_hour_of_week(date):
-    now = time.gmtime(date.time())
+def current_hour_of_week():
+    now = time.gmtime(time.time())
     hour_of_week = round((now.tm_wday * 24 * 60 * 60 +
                           now.tm_hour * 60 * 60 +
                           (now.tm_min / CRON_INTERVAL) * CRON_INTERVAL) / (60.0 * 60.0), 3)
