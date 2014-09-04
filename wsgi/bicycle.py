@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from flask.ext.sqlalchemy import *
 from flask import Flask, request, flash, url_for, redirect, render_template, abort
 import time
@@ -106,12 +107,14 @@ def update_with_dictionary(dictionary):
     for station in fetched_stations:
         station_dictionary = dictionary_copy[station.id];
         station.update_with_dictionary(station_dictionary)
+        logging.info('updating station for \"' + station.id + '\"')
         db.session.add(station)
         del dictionary_copy[station.id]
 
     # Create
     for station_id, station_dictionary in dictionary_copy.items():
         station = Station(station_dictionary)
+        logging.info('creating station for \"' + station_id + '\"')
         db.session.add(station)
 
     # Station info
@@ -123,12 +126,14 @@ def update_with_dictionary(dictionary):
     for station_info in fetched_station_infos:
         station_dictionary = dictionary_copy[station.id]
         station_info.update_with_dictionary(station_dictionary)
+        logging.info('updating station info for \"' + station.id + '\"')
         db.session.add(station_info)
         del dictionary_copy[station.id]
 
     # Create
     for station_id, station_dictionary in dictionary_copy.items():
         station_info = StationInfo(station_dictionary, hour_of_week)
+        logging.info('creating station info for \"' + station_id + '\"')
         db.session.add(station_info)
 
     db.session.commit()
