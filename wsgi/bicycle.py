@@ -110,13 +110,13 @@ def update_with_dictionary(dictionary):
         del dictionary_copy[station.id]
 
     # Create
-    for station_id, station_dictionary in dictionary_copy:
+    for station_id, station_dictionary in dictionary_copy.iteritems():
         station = Station(station_dictionary)
         db.session.add(station)
 
     # Station info
     dictionary_copy = dictionary.copy()
-    fetched_station_infos = StationInfo.query(StationInfo).filter(StationInfo.id.in_(station_ids),
+    fetched_station_infos = StationInfo.query.filter(StationInfo.id.in_(station_ids),
                                                                   StationInfo.hour_of_week == hour_of_week)
 
     # Update existent
@@ -126,7 +126,7 @@ def update_with_dictionary(dictionary):
         del dictionary_copy[station.id]
 
     # Create
-    for station_id, station_dictionary in dictionary_copy:
+    for station_id, station_dictionary in dictionary_copy.iteritems():
         station_info = StationInfo(station_dictionary)
         db.session.add(station_info)
 
