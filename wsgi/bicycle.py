@@ -116,8 +116,10 @@ def new():
 
 @app.route("/api/1/stations/<service>")
 def fetch_all_stations(service):
-    stations = Station.query.filter(Station.station_id.startswith(service))
-    return jsonify(stations=stations.all())
+    response = []
+    for station in Station.query.filter(Station.station_id.startswith(service)):
+        response.append(station.to_dict())
+    return jsonify(stations=response)
 
 
 def update_with_dictionary(dictionary):
