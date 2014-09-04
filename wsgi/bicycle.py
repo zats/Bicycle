@@ -101,7 +101,7 @@ def update_with_dictionary(dictionary):
 
     # Station
     dictionary_copy = dictionary.copy()
-    fetched_stations = Station.query(Station).filter(Station.id.in_(station_ids)).all()
+    fetched_stations = Station.query.filter(Station.id.in_(station_ids))
 
     # Update existent
     for station in fetched_stations:
