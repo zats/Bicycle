@@ -56,10 +56,11 @@ class StationInfo(db.Model):
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
 
-    def __init__(self, dictionary):
-        expected_keys = ['id', 'available_bicycles', 'available_poles', 'hour_of_week']
-        for key in expected_keys:
-            setattr(self, key, dictionary[key])
+    def __init__(self, dictionary, hour_of_week):
+        self.id = dictionary['id']
+        self.available_bicycles = dictionary['available_bicycles']
+        self.available_poles = dictionary['available_poles']
+        self.hour_of_week = hour_of_week
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
         self.samples_count = 1
@@ -113,17 +114,17 @@ def update_with_dictionary(dictionary):
     # Station info
     dictionary_copy = dictionary.copy()
     fetched_station_infos = StationInfo.query.filter(StationInfo.id.in_(station_ids),
-                                                                  StationInfo.hour_of_week == hour_of_week)
+                                                     StationInfo.hour_of_week == hour_of_week)
 
     # Update existent
     for station_info in fetched_station_infos:
-        station_dictionary = dictionary_copy[station.id];
+        station_dictionary = dictionary_copy[station.id]
         station_info.update_with_dictionary(station_dictionary)
         del dictionary_copy[station.id]
 
     # Create
     for station_id, station_dictionary in dictionary_copy.items():
-        station_info = StationInfo(station_dictionary)
+        station_info = StationInfo(station_dictionary, hour_of_week)
         db.session.add(station_info)
 
     db.session.commit()
