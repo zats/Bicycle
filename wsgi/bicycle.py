@@ -95,7 +95,7 @@ def new():
 
 
 def update_with_dictionary(dictionary):
-    result = ''
+    logging.error('Hello')
 
     station_ids = dictionary.keys()
     hour_of_week = current_hour_of_week()
@@ -108,14 +108,14 @@ def update_with_dictionary(dictionary):
     for station in fetched_stations:
         station_dictionary = dictionary_copy[station.id];
         station.update_with_dictionary(station_dictionary)
-        result += 'updating station for \"' + station.id + '\"<br>'
+        logging.error('updating station for \"' + station.id + '\"')
         # db.session.add(station)
         del dictionary_copy[station.id]
 
     # Create
     for station_id, station_dictionary in dictionary_copy.items():
         station = Station(station_dictionary)
-        result += 'creating station for \"' + station_id + '\"<br>'
+        logging.error('creating station for \"' + station_id + '\"')
         db.session.add(station)
 
     # Station info
@@ -127,18 +127,18 @@ def update_with_dictionary(dictionary):
     for station_info in fetched_station_infos:
         station_dictionary = dictionary_copy[station_info.id]
         station_info.update_with_dictionary(station_dictionary)
-        result += 'updating station info for \"' + station_info.id + '\"<br>'
+        logging.error('updating station info for \"' + station_info.id + '\"')
         # db.session.add(station_info)
         del dictionary_copy[station.id]
 
     # Create
     for station_id, station_dictionary in dictionary_copy.items():
         station_info = StationInfo(station_dictionary, hour_of_week)
-        result += 'creating station info for \"' + station_id + '\"<br>'
+        logging.error('creating station info for \"' + station_id + '\"')
         db.session.add(station_info)
 
     db.session.commit()
-    return result
+    return 'Great success'
 
 def current_hour_of_week():
     now = time.gmtime(time.time())
