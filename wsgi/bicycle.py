@@ -7,7 +7,6 @@ from random import randint
 
 CRON_INTERVAL = 2
 
-
 app = Flask(__name__)
 app.config.from_pyfile('app.cfg')
 db = SQLAlchemy(app)
@@ -28,16 +27,18 @@ class Station(db.Model):
     updated_at = db.Column(db.DateTime)
 
     def __init__(self, dictionary):
-        expected_keys = ['station_id', 'address', 'description', 'latitude', 'longitude', 'available_bicycles',
-                         'available_poles', 'capacity']
+        expected_keys = ['station_id', 'address', 'description',
+                         'latitude', 'longitude',
+                         'available_bicycles', 'available_poles', 'capacity']
         for key in expected_keys:
             setattr(self, key, dictionary[key])
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
 
     def update_with_dictionary(self, dictionary):
-        expected_keys = ['address', 'description', 'latitude', 'longitude', 'available_bicycles', 'available_poles',
-                         'capacity']
+        expected_keys = ['address', 'description',
+                         'latitude', 'longitude',
+                         'available_bicycles', 'available_poles','capacity']
         did_update = False
         for key in expected_keys:
             if (key in dictionary) and (getattr(self, key, None) != dictionary[key]):
@@ -46,6 +47,19 @@ class Station(db.Model):
         if did_update:
             self.updated_at = datetime.utcnow()
         return did_update
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.station_id,
+            'address': self.address,
+            'description': self.description,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'available_bicycles': self.available_bicycles,
+            'available_poles': self.available_poles,
+            'capacity': self.capacity
+        }
 
 
 class StationInfo(db.Model):
@@ -70,7 +84,8 @@ class StationInfo(db.Model):
 
     def update_with_dictionary(self, dictionary):
         self.samples_count += 1
-        self.available_bicycles += (dictionary['available_bicycles'] - self.available_bicycles) / float(self.samples_count)
+        self.available_bicycles += (dictionary['available_bicycles'] - self.available_bicycles) / float(
+            self.samples_count)
         self.available_poles += (dictionary['available_poles'] - self.available_poles) / float(self.samples_count)
         self.updated_at = datetime.utcnow()
 
@@ -147,6 +162,7 @@ def update_with_dictionary(dictionary):
 
     db.session.commit()
     return 'Great success'
+
 
 def current_hour_of_week():
     now = time.gmtime(time.time())
