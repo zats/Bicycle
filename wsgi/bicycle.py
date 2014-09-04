@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 import logging
 from flask.ext.sqlalchemy import *
 from flask import Flask, request, flash, url_for, redirect, render_template, abort, jsonify
@@ -119,7 +120,7 @@ def fetch_all_stations(service):
     response = []
     for station in Station.query.filter(Station.station_id.startswith(service)):
         response.append(station.to_dict())
-    return jsonify(stations=response)
+    return json.dumps({'stations': response}, separators=(',',':'))
 
 
 def update_with_dictionary(dictionary):
