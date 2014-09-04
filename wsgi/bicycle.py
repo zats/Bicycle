@@ -59,8 +59,8 @@ class Station(db.Model):
             'available_bicycles': self.available_bicycles,
             'available_poles': self.available_poles,
             'capacity': self.capacity,
-            'created_at': self.created_at.time(),
-            'updated_at': self.updated_at.time()
+            'created_at': self.created_at.timestamp(),
+            'updated_at': self.updated_at.timestamp()
         }
 
 
