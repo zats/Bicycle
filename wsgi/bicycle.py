@@ -49,8 +49,7 @@ class Station(db.Model):
             self.updated_at = datetime.utcnow()
         return did_update
 
-    @property
-    def serialize(self):
+    def to_dict(self):
         return {
             'id': self.station_id,
             'address': self.address,
