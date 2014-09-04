@@ -15,7 +15,7 @@ db = SQLAlchemy(app)
 
 class Station(db.Model):
     __tablename__ = 'stations'
-    id = db.Column('station_id', db.Integer, primary_key=True)
+    id = db.Column('id', db.Integer, primary_key=True)
     station_id = db.Column(db.String)
     address = db.Column(db.String)
     description = db.Column(db.String)
@@ -50,7 +50,7 @@ class Station(db.Model):
 
 class StationInfo(db.Model):
     __tablename__ = 'station_infos'
-    id = db.Column('station_info_id', db.Integer, primary_key=True)
+    id = db.Column('id', db.Integer, primary_key=True)
     station_id = db.Column(db.String)
     available_bicycles = db.Column(db.Integer)
     available_poles = db.Column(db.Integer)
