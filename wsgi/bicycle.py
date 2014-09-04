@@ -52,8 +52,8 @@ class StationInfo(db.Model):
     __tablename__ = 'station_infos'
     id = db.Column('id', db.Integer, primary_key=True)
     station_id = db.Column(db.String)
-    available_bicycles = db.Column(db.Integer)
-    available_poles = db.Column(db.Integer)
+    available_bicycles = db.Column(db.Float)
+    available_poles = db.Column(db.Float)
     samples_count = db.Column(db.Integer)
     hour_of_week = db.Column(db.Float)
     created_at = db.Column(db.DateTime)
