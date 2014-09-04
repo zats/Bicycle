@@ -110,7 +110,7 @@ def update_with_dictionary(dictionary):
         del dictionary_copy[station.id]
 
     # Create
-    for station_id, station_dictionary in dictionary_copy.iteritems():
+    for station_id, station_dictionary in dictionary_copy.items():
         station = Station(station_dictionary)
         db.session.add(station)
 
@@ -126,7 +126,7 @@ def update_with_dictionary(dictionary):
         del dictionary_copy[station.id]
 
     # Create
-    for station_id, station_dictionary in dictionary_copy.iteritems():
+    for station_id, station_dictionary in dictionary_copy.items():
         station_info = StationInfo(station_dictionary)
         db.session.add(station_info)
 
