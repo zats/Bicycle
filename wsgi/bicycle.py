@@ -106,6 +106,7 @@ def update_with_dictionary(dictionary):
     for station in fetched_stations:
         station_dictionary = dictionary_copy[station.id];
         station.update_with_dictionary(station_dictionary)
+        db.session.add(station)
         del dictionary_copy[station.id]
 
     # Create
@@ -122,6 +123,7 @@ def update_with_dictionary(dictionary):
     for station_info in fetched_station_infos:
         station_dictionary = dictionary_copy[station.id]
         station_info.update_with_dictionary(station_dictionary)
+        db.session.add(station_info)
         del dictionary_copy[station.id]
 
     # Create
