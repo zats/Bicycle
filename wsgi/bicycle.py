@@ -131,7 +131,7 @@ def update_with_dictionary(dictionary):
         station_info.update_with_dictionary(station_dictionary)
         logging.info('updating station info for \"' + station_info.station_id + '\"')
         # db.session.add(station_info)
-        del dictionary_copy[station.station_id]
+        del dictionary_copy[station_info.station_id]
 
     # Create
     for station_id, station_dictionary in dictionary_copy.items():
