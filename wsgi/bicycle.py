@@ -34,6 +34,7 @@ class Station(db.Model):
             setattr(self, key, dictionary[key])
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
+        pass
 
     def update_with_dictionary(self, dictionary):
         expected_keys = ['address', 'description',
@@ -83,6 +84,7 @@ class StationInfo(db.Model):
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
         self.samples_count = 1
+        pass
 
     def update_with_dictionary(self, dictionary):
         self.samples_count += 1
