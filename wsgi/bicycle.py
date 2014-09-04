@@ -2,7 +2,7 @@ from datetime import datetime
 from flask.ext.sqlalchemy import *
 from flask import Flask, request, flash, url_for, redirect, render_template, abort
 import time
-
+from random import randint
 
 CRON_INTERVAL = 2
 
@@ -80,13 +80,15 @@ def hello():
 
 @app.route("/new")
 def new():
+    b1 = randint(0, 20)
+    b2 = randint(0, 15)
     dictionary = {
         'telofun::1': {'id': 'telofun::1', 'address': 'King George 12',
                        'description': 'To the right from the falafel booth', 'latitude': 33.423, 'longitude': 44.235,
-                       'available_bicycles': 12, 'available_poles': 7, 'capacity': 20},
+                       'available_bicycles': b1, 'available_poles': 20 - b1, 'capacity': 20},
         'telofun::2': {'id': 'telofun::2', 'address': 'Dizengoff 31', 'description': 'Next to the fountain',
-                       'latitude': 33.123, 'longitude': 44.241, 'available_bicycles': 10, 'available_poles': 5,
-                       'capacity': 15}
+                       'latitude': 33.123, 'longitude': 44.241,
+                       'available_bicycles': b2, 'available_poles': 15 - b2, 'capacity': 15}
     }
     update_with_dictionary(dictionary)
     return redirect(url_for('hello'))
