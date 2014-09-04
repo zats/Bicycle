@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 from flask.ext.sqlalchemy import *
-from flask import Flask, request, flash, url_for, redirect, render_template, abort
+from flask import Flask, request, flash, url_for, redirect, render_template, abort, jsonify
 import time
 from random import randint
 
@@ -96,6 +96,12 @@ def new():
     return update_with_dictionary(dictionary)
 
 
+@app.route("/api/1/stations/<service>")
+def fetch_all_stations(service):
+    stations = Station.query.filter(Station.station_id.startswith(service))
+    return jsonify(stations)
+
+
 def update_with_dictionary(dictionary):
     logging.info('Hello')
 
@@ -151,5 +157,5 @@ def current_hour_of_week():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
 
