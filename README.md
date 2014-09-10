@@ -1,2 +1,4 @@
-:bicyclist: :cow: :dog: <sup>scrapers<sup/>
+:bicyclist: <sup>scrapers<sup/>
+
+:cow: :dog: <sub>moof</sub>
 
