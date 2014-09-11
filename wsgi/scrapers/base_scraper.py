@@ -1,14 +1,14 @@
 __author__ = 'zats'
 
-
+from abc import ABCMeta, abstractmethod
 import urllib
 
 
-DEFAULT_USER_AGENT = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) ' \
-                     'Gecko/20100101 Firefox/31.0'
+DEFAULT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10) ' \
+                     'AppleWebKit/600.1.15 (KHTML, like Gecko) Version/8.0 Safari/600.1.15'
 
 
-class BaseScraper(object):
+class BaseScraper(metaclass=ABCMeta):
     @abstractmethod
     def service_url(self):
         return None
