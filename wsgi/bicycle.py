@@ -2,8 +2,8 @@ import logging
 from flask.ext.sqlalchemy import *
 from flask import Flask, request, flash, url_for, redirect, render_template, abort, jsonify
 from random import randint
-from wsgi.models.station import Station
 from wsgi.scrapers.telofun_scraper import TelofunScraper
+from wsgi.models.station import Station
 from wsgi.models.station_info import StationInfo
 
 
