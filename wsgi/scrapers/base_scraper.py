@@ -8,7 +8,14 @@ DEFAULT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10) ' \
                      'AppleWebKit/600.1.15 (KHTML, like Gecko) Version/8.0 Safari/600.1.15'
 
 
-class BaseScraper(metaclass=ABCMeta):
+class BaseScraper(object):
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def service_name(self):
+        return None
+
+
     @abstractmethod
     def service_url(self):
         return None

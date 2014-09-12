@@ -3,16 +3,20 @@ from datetime import datetime
 from flask.ext.sqlalchemy import *
 from flask import Flask, request, flash, url_for, redirect, render_template, abort, jsonify
 from random import randint
+from sqlalchemy import create_engine
 from wsgi.scrapers.telofun_scraper import TelofunScraper
 
 
 CRON_INTERVAL = 2
-SERVICES = {'telofun': TelofunScraper.__class__}
-
+SERVICES = {'telofun':
+    {'class': 'Telofun'}
+}
 
 app = Flask(__name__)
 app.config.from_pyfile('app.cfg')
 db = SQLAlchemy(app)
+
+db.create_all()
 
 
 class Station(db.Model):
@@ -42,7 +46,7 @@ class Station(db.Model):
     def update_with_dictionary(self, dictionary):
         expected_keys = ['address', 'description',
                          'latitude', 'longitude',
-                         'available_bicycles', 'available_poles','capacity']
+                         'available_bicycles', 'available_poles', 'capacity']
         did_update = False
         for key in expected_keys:
             if (key in dictionary) and (getattr(self, key, None) != dictionary[key]):
@@ -96,10 +100,19 @@ class StationInfo(db.Model):
         self.updated_at = datetime.utcnow()
 
 
-
 @app.route("/")
 @app.route("/hello")
 def hello():
+    # Here be dragons... local setup
+    # 
+    # url = os.environ['OPENSHIFT_POSTGRESQL_DB_URL']
+    # engine = create_engine(url)
+    # conn = engine.connect()
+    # dbname = 'zats'
+    # conn.connection.connection.set_isolation_level(0)
+    # db.create_all()
+    # # conn.execute('create database %s' % dbname)
+    # conn.connection.connection.set_isolation_level(1)
     return "Hello World!"
 
 
@@ -118,21 +131,29 @@ def new():
     return update_with_dictionary(dictionary)
 
 
-@app.route("/api/1/scrapers/<service>")
-def fetch_all_stations(service):
+@app.route("/api/1/<service>/scrape")
+def scrape_for_service(service):
     if service not in SERVICES:
-        return "<h1>Unknown service</h1>"
+        abort(404)
 
-    service_class = SERVICES[service]
-    scraper = service_class()
-    markers = scraper.scrape(scraper.service_url())
+    service_object = SERVICES[service]
     try:
+        print("Service object '%s'" % service_object)
+        service_class = eval(service_object['class'] + 'Scraper')
+        scraper = service_class()
+        markers = scraper.scrape(scraper.service_url())
+        print("Markers %s" % markers)
         update_with_dictionary(markers)
-    except:
-        return "Failed"
+    except Exception as e:
+        print("Exception %s" % e)
+        raise e
+        abort(500)
 
     return "Success"
 
+@app.route("/api/1/<service>/stations")
+def fetch_stations_for_service(service):
+    return service
 
 def update_with_dictionary(dictionary):
     logging.info('Hello')
@@ -190,5 +211,5 @@ def current_hour_of_week():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
 
