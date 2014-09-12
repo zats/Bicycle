@@ -149,7 +149,7 @@ def test_db():
 @app.route("/api/1/<service>/scrape")
 def scrape_for_service(service):
     if service not in SERVICES:
-        return error_response(404, "Service \"" + service + "\" not found")
+        return error_response(404, "Service \"" + service + "\" is not found")
 
     service_object = SERVICES[service]
     try:
