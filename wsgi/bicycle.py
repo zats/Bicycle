@@ -146,7 +146,7 @@ def test_db():
 @app.route("/api/1/<service>/scrape")
 def scrape_for_service(service):
     if service not in SERVICES:
-        abort(404)
+        return error_response(404, "Service \"" + service + "\" not found")
 
     service_object = SERVICES[service]
     try:
@@ -154,8 +154,7 @@ def scrape_for_service(service):
         scraper = service_class()
         markers = scraper.scrape(scraper.service_url())
         update_with_dictionary(service, markers)
-    except Exception as e:
-        abort(500)
+    except BaseException as e:
         return error_response(500, str(e))
 
     return "Success"
