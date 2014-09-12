@@ -1,9 +1,11 @@
 __author__ = 'zats'
 
 
-from wsgi.bicycle import SERVICES
+from wsgi.bicycle import SERVICES, scrape_for_service
 
 
 print("Hello from the scraper")
 for service in SERVICES.keys():
-    print("service %s" % service)
+    print("Scraping for '%s'" % service)
+    scrape_for_service(service)
+
