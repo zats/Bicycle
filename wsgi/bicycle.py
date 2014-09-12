@@ -1,9 +1,13 @@
-import logging
+__author__ = 'zats'
+
+
+import csv
 from datetime import datetime
 from flask.ext.compress import Compress
 from flask.ext.sqlalchemy import *
 from flask import Flask, request, flash, url_for, redirect, render_template, abort, jsonify
 from random import randint
+import io
 from sqlalchemy import desc, asc
 from wsgi.scrapers import *
 
@@ -119,7 +123,6 @@ class StationInfo(db.Model):
         }
 
 
-
 @app.route("/")
 def hello():
     return "<h1 style='text-align: center;'>🐮🐶 Moof!</h1>"
@@ -196,18 +199,23 @@ def fetch_statistics(service):
 
     query = query.order_by(asc(StationInfo.hour_of_week))
 
-    result = {}
+    outputs = {}
     for station_info in query:
         station_id = station_info.station_id
-        if station_id not in result:
-            result[station_id] = [station_info.to_dict()]
+        if station_id not in outputs:
+            output = io.StringIO()
+            outputs[station_id] = output
+            writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+            writer.writerow(list(station_info.to_dict().keys()))
+            writer.writerow(list(station_info.to_dict().values()))
         else:
-            result[station_id].append(station_info.to_dict())
+            writer.writerow(list(station_info.to_dict().values()))
 
+    outputs = {key: value.getvalue() for (key, value) in outputs.items()}
     return jsonify({'response': {
         'statistics': [{
             'service': service,
-            'stations': result
+            'stations': outputs
         }]
     }})
 
