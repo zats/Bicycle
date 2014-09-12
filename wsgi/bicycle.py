@@ -155,8 +155,8 @@ def scrape_for_service(service):
         markers = scraper.scrape(scraper.service_url())
         update_with_dictionary(service, markers)
     except Exception as e:
-        raise e
         abort(500)
+        return error_response(500, str(e))
 
     return "Success"
 
