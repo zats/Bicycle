@@ -118,7 +118,6 @@ class StationInfo(db.Model):
         return {
             'available_bicycles': self.available_bicycles,
             'available_poles': self.available_poles,
-            'samples_count': self.samples_count,
             'hour_of_week': self.hour_of_week
         }
 
