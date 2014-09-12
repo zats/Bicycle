@@ -5,11 +5,14 @@ from flask.ext.sqlalchemy import *
 from flask import Flask, request, flash, url_for, redirect, render_template, abort, jsonify
 from random import randint
 from sqlalchemy import desc, asc
+from wsgi.scrapers import *
 
 
 CRON_INTERVAL = 2
 SERVICES = {'telofun':
-    {'class': 'Telofun'}
+    {
+        'class': 'Telofun'
+    }
 }
 
 app = Flask(__name__)
@@ -154,7 +157,7 @@ def scrape_for_service(service):
         scraper = service_class()
         markers = scraper.scrape(scraper.service_url())
         update_with_dictionary(service, markers)
-    except BaseException as e:
+    except Exception as e:
         return error_response(500, str(e))
 
     return "Success"
