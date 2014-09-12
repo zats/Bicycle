@@ -140,9 +140,9 @@ def test_db():
     b2 = randint(0, 15)
     dictionary = {
         'telofun::1': {'station_id': 'telofun::1', 'address': 'King George 12',
-                       'description': 'To the right from the falafel booth', 'latitude': 33.423, 'longitude': 44.235,
+                       'description': 'To the right from the booth', 'latitude': 33.423, 'longitude': 44.235,
                        'available_bicycles': b1, 'available_poles': 20 - b1, 'capacity': 20},
-        'telofun::2': {'station_id': 'telofun::2', 'address': 'Dizengoff 31', 'description': 'Next to the fountain',
+        'telofun::2': {'station_id': 'telofun::2', 'address': 'Wall street, 31', 'description': 'Next to the fountain',
                        'latitude': 33.123, 'longitude': 44.241,
                        'available_bicycles': b2, 'available_poles': 15 - b2, 'capacity': 15}
     }
