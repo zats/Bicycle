@@ -168,7 +168,7 @@ def fetch_stations_for_service(service):
     if service not in SERVICES:
         abort(404)
 
-    stations = Station.query.filter(Station.service == service)
+    stations = Station.query.filter(Station.service == service).order_by(asc(Station.station_id))
     result = {'stations': []}
     for station in stations:
         result['stations'].append(station.to_dict())
