@@ -43,7 +43,7 @@ class TelofunScraper(BaseScraper):
         result = {
             "latitude": float(marker_object[0]),
             "longitude": float(marker_object[1]),
-            "station_id": self.service_name() + "::" + marker_object[2],
+            "station_id": marker_object[2],
             "address": marker_object[3],
             "description": marker_object[4],
             "capacity": capacity,
