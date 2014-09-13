@@ -15,7 +15,6 @@ class BaseScraper(object):
     def service_name(self):
         return None
 
-
     @abstractmethod
     def service_url(self):
         return None
@@ -28,7 +27,6 @@ class BaseScraper(object):
     def open_url(cls, url, referer=None, user_agent=None):
         """ read url
         """
-
         request = urllib.request.Request(url)
         user_agent = user_agent if user_agent else DEFAULT_USER_AGENT
         request.add_header('User-Agent', user_agent)

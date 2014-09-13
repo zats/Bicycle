@@ -34,7 +34,7 @@ Bicycles! Scrapers! :cow::dog: Moof!
 }
 ```
 
-Where `csv_data` is `samples_count`, `available_poles`, `hour_of_week`, `available_bicycles`
+Where `csv_data` is `samples_count`, `available_docks`, `hour_of_week`, `available_bicycles`
 
 # Utility
 

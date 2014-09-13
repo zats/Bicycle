@@ -38,8 +38,8 @@ class TelofunScraper(BaseScraper):
 
     def parse_marker(self, marker_object):
         capacity = int(marker_object[5])
-        available_poles = int(marker_object[6])
-        available_bicycles = capacity - available_poles
+        available_docks = int(marker_object[6])
+        available_bicycles = capacity - available_docks
         result = {
             'latitude': float(marker_object[0]),
             'longitude': float(marker_object[1]),
@@ -48,7 +48,7 @@ class TelofunScraper(BaseScraper):
             'description': marker_object[4],
             'capacity': capacity,
             'available_bicycles': available_bicycles,
-            'available_poles': available_poles,
+            'available_docks': available_docks,
             'is_active': capacity > 0
         }
         return result

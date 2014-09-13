@@ -80,7 +80,7 @@ class Station(db.Model):
             'latitude': self.latitude,
             'longitude': self.longitude,
             'available_bicycles': self.available_bicycles,
-            'available_poles': self.available_poles,
+            'available_docks': self.available_docks,
             'capacity': self.capacity,
             'created_at': self.created_at.timestamp(),
             'updated_at': self.updated_at.timestamp(),
@@ -94,7 +94,7 @@ class StationInfo(db.Model):
     service = db.Column(db.String)
     station_id = db.Column(db.String)
     available_bicycles = db.Column(db.Float)
-    available_poles = db.Column(db.Float)
+    available_docks = db.Column(db.Float)
     samples_count = db.Column(db.Integer)
     hour_of_week = db.Column(db.Float)
     created_at = db.Column(db.DateTime)
@@ -104,7 +104,7 @@ class StationInfo(db.Model):
         self.service = service
         self.station_id = dictionary['station_id']
         self.available_bicycles = dictionary['available_bicycles']
-        self.available_poles = dictionary['available_poles']
+        self.available_docks = dictionary['available_docks']
         self.hour_of_week = hour_of_week
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
@@ -115,13 +115,13 @@ class StationInfo(db.Model):
         self.samples_count += 1
         self.available_bicycles += (dictionary['available_bicycles'] - self.available_bicycles) / float(
             self.samples_count)
-        self.available_poles += (dictionary['available_poles'] - self.available_poles) / float(self.samples_count)
+        self.available_docks += (dictionary['available_docks'] - self.available_docks) / float(self.samples_count)
         self.updated_at = datetime.utcnow()
 
     def to_dict(self):
         return {
             'available_bicycles': self.available_bicycles,
-            'available_poles': self.available_poles,
+            'available_docks': self.available_docks,
             'hour_of_week': self.hour_of_week
         }
 
@@ -148,10 +148,10 @@ def test_db():
     dictionary = {
         'telofun::1': {'station_id': 'telofun::1', 'address': 'King George 12',
                        'description': 'To the right from the booth', 'latitude': 33.423, 'longitude': 44.235,
-                       'available_bicycles': b1, 'available_poles': 20 - b1, 'capacity': 20},
+                       'available_bicycles': b1, 'available_docks': 20 - b1, 'capacity': 20, 'is_active': False},
         'telofun::2': {'station_id': 'telofun::2', 'address': 'Wall street, 31', 'description': 'Next to the fountain',
                        'latitude': 33.123, 'longitude': 44.241,
-                       'available_bicycles': b2, 'available_poles': 15 - b2, 'capacity': 15}
+                       'available_bicycles': b2, 'available_docks': 15 - b2, 'capacity': 15, 'is_active': True}
     }
     return update_with_dictionary('telofun', dictionary)
 
@@ -217,7 +217,6 @@ def fetch_statistics(service):
             writer.writerow(list(station_info.to_dict().values()))
         else:
             writer.writerow(list(station_info.to_dict().values()))
-
     outputs = {key: value.getvalue() for (key, value) in outputs.items()}
     return jsonify({'response': {
         'statistics': [{
@@ -290,5 +289,5 @@ def array_from_parameter(string):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
 
