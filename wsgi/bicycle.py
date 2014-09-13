@@ -13,10 +13,9 @@ from wsgi.scrapers import *
 
 
 CRON_INTERVAL = 2
-SERVICES = {'telofun':
-    {
-        'class': 'Telofun'
-    }
+SERVICES = {
+    'telofun': {'class': 'Telofun'},
+    'bayareabikeshare': {'class': 'BayAreaBikeShare'}
 }
 
 app = Flask(__name__)
