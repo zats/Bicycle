@@ -1,12 +1,16 @@
 __author__ = 'zats'
 
 
+import inspect
 from wsgi.scrapers.base_scraper import BaseScraper
 from wsgi.bicycle import *
 
 with app.app_context():
     print("Hello from the scraper")
     for scraperClass in BaseScraper.__subclasses__():
+        if inspect.isabstract(scraperClass):
+            print("Found an abstract class %s; skipping" % scraperClass)
+            continue
         print("Scraping for '%s'" % scraperClass)
         try:
             scraper = scraperClass()
