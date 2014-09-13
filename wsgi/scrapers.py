@@ -1,15 +1,19 @@
 __author__ = 'zats'
 
 
+from wsgi.scrapers.base_scraper import BaseScraper
 from wsgi.bicycle import SERVICES, scrape_for_service
 
 
 print("Hello from the scraper")
-for service in SERVICES.keys():
-    print("Scraping for '%s'" % service)
+for scraperClass in BaseScraper.__subclasses__():
+    print("Scraping for '%s'" % scraperClass)
     try:
-        scrape_for_service(service)
+        scraper = scraperClass()
+        service_name = scraper.service_name()
+        print("Processing service %s" % service_name)
+        scrape_for_service(service_name)
     except Exception as e:
-        print("Failed to scrape for '%s'" % service)
+        print("Failed to scrape '%s'" % e)
 
 
