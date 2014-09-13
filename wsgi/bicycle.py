@@ -35,7 +35,7 @@ class Station(db.Model):
     address = db.Column(db.String)
     description = db.Column(db.String)
     available_bicycles = db.Column(db.Integer)
-    available_poles = db.Column(db.Integer)
+    available_docks = db.Column(db.Integer)
     capacity = db.Column(db.Integer)
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
@@ -46,7 +46,7 @@ class Station(db.Model):
     def __init__(self, service, dictionary):
         expected_keys = ['station_id', 'address', 'description',
                          'latitude', 'longitude',
-                         'available_bicycles', 'available_poles', 'capacity',
+                         'available_bicycles', 'available_docks', 'capacity',
                          'is_active']
         for key in expected_keys:
             setattr(self, key, dictionary[key])
@@ -58,7 +58,7 @@ class Station(db.Model):
     def update(self, dictionary):
         expected_keys = ['address', 'description',
                          'latitude', 'longitude',
-                         'available_bicycles', 'available_poles', 'capacity',
+                         'available_bicycles', 'available_docks', 'capacity',
                          'is_active']
         did_update = False
         for key in expected_keys:
