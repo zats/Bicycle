@@ -2,7 +2,7 @@ __author__ = 'zats'
 
 
 from wsgi.scrapers.base_scraper import BaseScraper
-from wsgi.bicycle import SERVICES, scrape_for_service
+from wsgi.bicycle import *
 
 
 print("Hello from the scraper")
