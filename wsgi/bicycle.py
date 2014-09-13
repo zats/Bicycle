@@ -19,12 +19,10 @@ SERVICES = {
 }
 
 app = Flask(__name__)
-gzip = Compress(app)
 app.config.from_pyfile('app.cfg')
 app.config.update(
     JSONIFY_PRETTYPRINT_REGULAR=False,
-    JSON_SORT_KEYS=False,
-    COMPRESS_MIN_SIZE=10
+    JSON_SORT_KEYS=False
 )
 db = SQLAlchemy(app)
 
@@ -152,7 +150,12 @@ def test_db():
                        'latitude': 33.123, 'longitude': 44.241,
                        'available_bicycles': b2, 'available_docks': 15 - b2, 'capacity': 15, 'is_active': True}
     }
-    return update_with_dictionary('telofun', dictionary)
+    try:
+        result = update_with_dictionary('telofun', dictionary)
+    except Exception as e:
+        return error_response(500, str(e))
+
+    return result
 
 
 @app.route("/api/1/<service>/scrape")
