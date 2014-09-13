@@ -12,7 +12,7 @@ class TelofunScraper(BaseScraper):
         return 'telofun'
 
     def service_url(self):
-        return "https://www.tel-o-fun.co.il/en/TelOFunLocations.aspx"
+        return 'https://www.tel-o-fun.co.il/en/TelOFunLocations.aspx'
 
     def scrape(self, url):
         content = self.open_url(url)
@@ -21,7 +21,7 @@ class TelofunScraper(BaseScraper):
         script = None
         for _ in scripts:
             _ = _.text
-            if type(_) is not str or not _.startswith("function loadMarkers()"): continue
+            if type(_) is not str or not _.startswith('function loadMarkers()'): continue
             script = _
 
         if script is None:
@@ -41,14 +41,15 @@ class TelofunScraper(BaseScraper):
         available_poles = int(marker_object[6])
         available_bicycles = capacity - available_poles
         result = {
-            "latitude": float(marker_object[0]),
-            "longitude": float(marker_object[1]),
-            "station_id": marker_object[2],
-            "address": marker_object[3],
-            "description": marker_object[4],
-            "capacity": capacity,
-            "available_bicycles": available_bicycles,
-            "available_poles": available_poles
+            'latitude': float(marker_object[0]),
+            'longitude': float(marker_object[1]),
+            'station_id': marker_object[2],
+            'address': marker_object[3],
+            'description': marker_object[4],
+            'capacity': capacity,
+            'available_bicycles': available_bicycles,
+            'available_poles': available_poles,
+            'is_active': capacity > 0
         }
         return result
 

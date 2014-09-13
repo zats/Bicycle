@@ -8,7 +8,7 @@ from flask.ext.sqlalchemy import *
 from flask import Flask, request, flash, url_for, redirect, render_template, abort, jsonify
 from random import randint
 import io
-from sqlalchemy import desc, asc
+from sqlalchemy import asc
 from wsgi.scrapers import *
 
 
@@ -44,11 +44,13 @@ class Station(db.Model):
     longitude = db.Column(db.Float)
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
+    is_active = db.Column(db.Boolean)
 
     def __init__(self, service, dictionary):
         expected_keys = ['station_id', 'address', 'description',
                          'latitude', 'longitude',
-                         'available_bicycles', 'available_poles', 'capacity']
+                         'available_bicycles', 'available_poles', 'capacity',
+                         'is_active']
         for key in expected_keys:
             setattr(self, key, dictionary[key])
         self.service = service
@@ -59,7 +61,8 @@ class Station(db.Model):
     def update(self, dictionary):
         expected_keys = ['address', 'description',
                          'latitude', 'longitude',
-                         'available_bicycles', 'available_poles', 'capacity']
+                         'available_bicycles', 'available_poles', 'capacity',
+                         'is_active']
         did_update = False
         for key in expected_keys:
             if (key in dictionary) and (getattr(self, key, None) != dictionary[key]):
@@ -80,7 +83,8 @@ class Station(db.Model):
             'available_poles': self.available_poles,
             'capacity': self.capacity,
             'created_at': self.created_at.timestamp(),
-            'updated_at': self.updated_at.timestamp()
+            'updated_at': self.updated_at.timestamp(),
+            'is_active': self.is_active
         }
 
 
