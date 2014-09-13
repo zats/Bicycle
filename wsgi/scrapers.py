@@ -11,8 +11,8 @@ with app.app_context():
         if scraperClass is None or inspect.isabstract(scraperClass):
             print("Found an abstract class skipping")
             continue
-        print("Scraping for '%s'" % scraperClass)
         try:
+            print("Scraping for '%s'" % scraperClass)
             scraper = scraperClass()
             service_name = scraper.service_name()
             print("Processing service %s" % service_name)
