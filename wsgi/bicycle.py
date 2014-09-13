@@ -191,8 +191,8 @@ def fetch_statistics(service):
     try:
         station_ids = request.args['station_ids']
         time_ranges = request.args['time_ranges']
-    except:
-        return error_response(400, "Invalid parameters")
+    except Exception as e:
+        return error_response(400, "Invalid parameters. " + str(e))
 
     time_ranges = array_from_parameter(time_ranges)
     station_ids = array_from_parameter(station_ids)

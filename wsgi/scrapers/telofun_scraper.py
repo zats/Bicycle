@@ -31,19 +31,20 @@ class TelofunScraper(BaseScraper):
         raw_markers = re.findall(regex, script)
         markers = {}
         for raw_marker in raw_markers:
-            marker = self.parse_marker(raw_marker)
-            station_id = marker['station_id']
+            (station_id, marker) = self.parse_marker(raw_marker)
             markers[station_id] = marker
         return markers
 
-    def parse_marker(self, marker_object):
+    @staticmethod
+    def parse_marker(marker_object):
+        station_id = marker_object[2]
         capacity = int(marker_object[5])
         available_docks = int(marker_object[6])
         available_bicycles = capacity - available_docks
         result = {
             'latitude': float(marker_object[0]),
             'longitude': float(marker_object[1]),
-            'station_id': marker_object[2],
+            'station_id': station_id,
             'address': marker_object[3],
             'description': marker_object[4],
             'capacity': capacity,
@@ -51,5 +52,5 @@ class TelofunScraper(BaseScraper):
             'available_docks': available_docks,
             'is_active': capacity > 0
         }
-        return result
+        return station_id, result
 
