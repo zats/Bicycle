@@ -129,7 +129,11 @@ def hello():
 
 @app.route("/db/setup")
 def setup_db():
-    db.create_all()
+    try:
+        db.drop_all()
+        db.create_all()
+    except Exception as e:
+        return error_response(500, str(e))
     return "Success"
 
 
