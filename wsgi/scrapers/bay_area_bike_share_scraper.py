@@ -3,8 +3,6 @@ import json
 __author__ = 'zats'
 
 
-import re
-from bs4 import BeautifulSoup
 from wsgi.custom_exceptions import ParsingErrorException
 from wsgi.scrapers.base_scraper import BaseScraper
 
