@@ -8,7 +8,7 @@ from wsgi.bicycle import *
 with app.app_context():
     print("Hello from the scraper")
     for scraperClass in BaseScraper.__subclasses__():
-        if inspect.isabstract(scraperClass):
+        if scraperClass is None or inspect.isabstract(scraperClass):
             print("Found an abstract class %s; skipping" % scraperClass)
             continue
         print("Scraping for '%s'" % scraperClass)
