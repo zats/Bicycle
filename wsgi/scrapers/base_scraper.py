@@ -2,6 +2,7 @@ __author__ = 'zats'
 
 from abc import ABCMeta, abstractmethod
 import urllib
+import urllib.request
 
 
 DEFAULT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10) ' \
@@ -33,5 +34,5 @@ class BaseScraper(object):
         if referer:
             request.add_header('Referer', referer)
         response = urllib.request.urlopen(request)
-        page = response.read()
-        return page
+        encoding = response.headers.get_content_charset()
+        return response.read().decode(encoding)

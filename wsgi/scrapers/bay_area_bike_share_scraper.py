@@ -16,7 +16,7 @@ class BayAreaBikeShareScraper(BaseScraper):
 
     def scrape(self, url):
         json_data = self.open_url(url)
-        data = json.load(json_data)
+        data = json.loads(json_data)
 
         result = {}
         for raw_station in data['stationBeanList']:
