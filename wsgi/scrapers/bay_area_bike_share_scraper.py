@@ -20,7 +20,7 @@ class BayAreaBikeShareScraper(BaseScraper):
 
         result = {}
         for raw_station in data['stationBeanList']:
-            station_id, marker = self.parse_station(raw_station)
+            station_id, marker = self.parse_stations(raw_station)
             result[station_id] = marker
         return result
 
