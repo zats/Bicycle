@@ -12,7 +12,7 @@ with app.app_context():
             scraper = scraperClass()
             service_name = scraper.service_name()
             print("Processing service %s" % service_name)
-            scrape_for_service(service_name)
+            scrape_for_service(service_name, False)
         except Exception as e:
             print("Failed to scrape '%s'" % e)
 

@@ -159,7 +159,7 @@ def test_db():
 
 
 @app.route("/api/1/<service>/scrape")
-def scrape_for_service(service):
+def scrape_for_service(service, swallaw_exceptions=True):
     if service not in SERVICES:
         return error_response(404, "Service \"" + service + "\" is not found")
 
@@ -170,7 +170,10 @@ def scrape_for_service(service):
         markers = scraper.scrape(scraper.service_url())
         update_with_dictionary(service, markers)
     except Exception as e:
-        return error_response(500, str(e))
+        if swallaw_exceptions:
+            return error_response(500, str(e))
+        else:
+            raise e
 
     return "Success"
 
