@@ -4,8 +4,8 @@ Bicycles! Scrapers! :cow::dog: Moof!
 
 ## Database
 
-* `/db/setup` - sets up a database when run on a clean local enviroment 
-* `/db/test` - writes a test record in the database. **Don't forget to remove!**
+* `/db/setup` - sets up a database when run on a clean local enviroment **Currently, purges all the existent records**
+* `/db/test` - writes a test record in the database. **Don't forget to remove it!**
 
 ## API
 
