@@ -275,9 +275,7 @@ def update_with_dictionary(service, dictionary):
 
 def current_hour_of_week():
     now = time.gmtime(time.time())
-    hour_of_week = round((now.tm_wday * 24 * 60 * 60 +
-                          now.tm_hour * 60 * 60 +
-                          (now.tm_min / CRON_INTERVAL) * CRON_INTERVAL) / (60.0 * 60.0), 3)
+    hour_of_week = now.tm_wday * 24 + round((now.tm_hour + now.tm_min / 60) * 1000) / 1000
     return hour_of_week
 
 
