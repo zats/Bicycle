@@ -34,5 +34,5 @@ class BaseScraper(object):
         if referer:
             request.add_header('Referer', referer)
         response = urllib.request.urlopen(request)
-        encoding = response.headers.get_content_charset()
+        encoding = response.headers.get_content_charset() or 'utf-8'
         return response.read().decode(encoding)
