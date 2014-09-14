@@ -16,7 +16,8 @@ CRON_INTERVAL = 2
 SERVICES = {
     'telofun': {'class': 'Telofun'},
     'bayareabikeshare': {'class': 'BayAreaBikeShare'},
-    'bikesharetoronto': {'class': 'BikeShareToronto'}
+    'bikesharetoronto': {'class': 'BikeShareToronto'},
+    'citibikenyc': {'class': 'CityBikeNewYork'}
 }
 
 app = Flask(__name__)
