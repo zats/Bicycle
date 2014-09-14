@@ -17,7 +17,8 @@ SERVICES = {
     'telofun': {'class': 'Telofun'},
     'bayareabikeshare': {'class': 'BayAreaBikeShare'},
     'bikesharetoronto': {'class': 'BikeShareToronto'},
-    'citibikenyc': {'class': 'CityBikeNewYork'}
+    'citibikenyc': {'class': 'CityBikeNewYork'},
+    'divvybikes': {'class': 'DivvyBikes'}
 }
 
 app = Flask(__name__)
