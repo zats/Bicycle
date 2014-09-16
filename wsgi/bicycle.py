@@ -135,7 +135,8 @@ def hello():
 @app.route("/ping")
 def ping():
     response = urllib.request.urlopen('http://pingpong-zats.rhcloud.com/')
-    print("Ping recevied. Pong.\n%s" % response)
+    print("Pong response: %s" % response.read().decode('utf-8'))
+    return "Pong";
 
 @app.route("/db/setup")
 def setup_db():
