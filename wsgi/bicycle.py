@@ -1,13 +1,14 @@
 __author__ = 'zats'
 
 
+import io
 import csv
 from datetime import datetime
 from flask.ext.compress import Compress
 from flask.ext.sqlalchemy import *
 from flask import Flask, request, flash, url_for, redirect, render_template, abort, jsonify
 from random import randint
-import io
+import urllib.request
 from sqlalchemy import asc
 from wsgi.scrapers import *
 
@@ -130,6 +131,12 @@ class StationInfo(db.Model):
 def hello():
     return "<h1 style='text-align: center;'>🐮🐶 Moof!</h1>"
 
+
+@app.route("/ping")
+def ping():
+    response = urllib.request.urlopen('http://pingpong-zats.rhcloud.com/')
+    html = response.read().decode('utf-8')
+    print("Ping recevied. Pong:\n%s" % html)
 
 @app.route("/db/setup")
 def setup_db():
