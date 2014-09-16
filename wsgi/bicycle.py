@@ -134,7 +134,7 @@ def hello():
 
 @app.route("/ping")
 def ping():
-    response = urllib.request.urlopen('http://pingpong-zats.rhcloud.com/')
+    response = urllib.request.urlopen('http://pingpong-zats.rhcloud.com/pong')
     print("Pong response: %s" % response.read().decode('utf-8'))
     return "Pong";
 
