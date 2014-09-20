@@ -44,9 +44,11 @@
 
         <td>
             <div class="progress">
-            {% if station['capacity'] != 0 %}
+            {% if station['capacity'] == 0 %}
+                <div class="progress-bar progress-bar-danger" role="progressbar" style="width: 100%;"><span class="sr-only"></span></div>
+            {% else %}
+                <div class="progress-bar progress-bar-danger" role="progressbar" style="width: {{ (station.capacity - station.available_docks - station.available_bicycles) / station.capacity * 100 }}%;"><span class="sr-only"></span></div>
                 <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{ station.available_bicycles / station.capacity * 100 }}%"><span class="sr-only">Available bicycles: {{ station.available_bicycles }}</span></div>
-                <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{ station.available_docks / station.capacity * 100 }}%;"><span class="sr-only">Available docks: {{ station.available_docks }}</span></div>
             {% endif %}
             </div>
         </td>
