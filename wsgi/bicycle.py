@@ -15,11 +15,11 @@ from wsgi.scrapers import *
 
 CRON_INTERVAL = 2
 SERVICES = {
-    'telofun': {'class': 'Telofun'},
-    'bayareabikeshare': {'class': 'BayAreaBikeShare'},
-    'bikesharetoronto': {'class': 'BikeShareToronto'},
-    'citibikenyc': {'class': 'CityBikeNewYork'},
-    'divvybikes': {'class': 'DivvyBikes'}
+    'telofun': {'class': 'Telofun', 'name': 'Telofun', 'city': 'Tel Aviv'},
+    'bayareabikeshare': {'class': 'BayAreaBikeShare', 'name': 'Bay Area Bike Share', 'city': 'San Francisco'},
+    'bikesharetoronto': {'class': 'BikeShareToronto', 'name': 'Bike Share Toronto', 'city': 'Toronto'},
+    'citibikenyc': {'class': 'CityBikeNewYork', 'name': 'Citi Bike New York', 'city': 'New York'},
+    'divvybikes': {'class': 'DivvyBikes', 'name': 'Divvy', 'city': 'Chicago'}
 }
 
 app = Flask(__name__)
@@ -30,6 +30,10 @@ app.config.update(
 )
 db = SQLAlchemy(app)
 
+def create_services_list():
+    SERVICES = {}
+
+create_services_list()
 
 class Station(db.Model):
     __tablename__ = 'stations'
@@ -168,6 +172,16 @@ def test_db():
     return result
 
 
+@app.route("/services/<active_service_id>")
+def all_statistics(active_service_id):
+    if active_service_id not in SERVICES:
+        abort(404)
+
+    stations = Station.query.filter(Station.service == active_service_id).order_by(asc(Station.station_id))
+
+    return render_template('stations.html', title="Services", services=SERVICES, active_service_id=active_service_id, stations=stations)
+
+
 @app.route("/api/1/<service>/scrape")
 def scrape_for_service(service, swallaw_exceptions=True):
     if service not in SERVICES:
@@ -302,5 +316,5 @@ def array_from_parameter(string):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
 

@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block body %}
+
+{% if not active_service_id %}
+<div class="alert alert-danger" role="alert">
+    <strong>Service not found!</strong>
+</div>
+{% endif %}
+
+<ul class="nav nav-tabs" role="tablist">
+    {% for service_id in services %}
+    {% if active_service_id == service_id %}
+        <li class="active"><a href="/services/{{ service_id }}">{{ services[service_id]['name'] }}</a></li>
+    {% else %}
+        <li><a href="/services/{{ service_id }}">{{ services[service_id]['name'] }}</a></li>
+    {% endif %}
+    {% endfor %}
+</ul>
+
+<table class="table">
+    <thead>
+      <tr>
+        <th>Station</th>
+        <th width="30%">Availability</th>
+      </tr>
+    </thead>
+    <tbody>
+{% for station in stations %}
+      <tr>
+        <td>
+
+        {% if stations.is_active == false %}
+        <del>
+        {% endif %}
+
+        <small style="color:#CCC">{{ station.station_id }}</small> {{ station.address }}
+        {% if station.description != station.address %}
+        <small style="color:#CCC">{{ station.description }}</small>
+        {% endif %}
+
+        {% if stations.is_active == false %}
+        </del>
+        {% endif %}
+
+        <td>
+            <div class="progress">
+            {% if station['capacity'] != 0 %}
+                <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{ station.available_bicycles / station.capacity * 100 }}%"><span class="sr-only">Available bicycles: {{ station.available_bicycles }}</span></div>
+                <div class="progress-bar progress-bar-info" role="progressbar" style="width: {{ station.available_docks / station.capacity * 100 }}%;"><span class="sr-only">Available docks: {{ station.available_docks }}</span></div>
+            {% endif %}
+            </div>
+        </td>
+      </tr>
+{% endfor %}
+    </tbody>
+  </table>
+
+
+
+{% endblock %}
