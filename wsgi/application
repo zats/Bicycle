@@ -1,6 +1,11 @@
 #!/usr/bin/python
 import os
 import sys
+import newrelic.agent
+
+config_file = os.path.join(os.environ['OPENSHIFT_DATA_DIR'], 'newrelic.ini')
+if os.path.exists(config_file):
+        newrelic.agent.initialize(config_file, 'production')
 
 sys.path.insert(0, os.path.dirname(__file__) or '.')
 
