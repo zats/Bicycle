@@ -1,21 +1,27 @@
 {% extends "layout.html" %}
 {% block body %}
 
-{% if not active_service_id %}
-<div class="alert alert-danger" role="alert">
-    <strong>Service not found!</strong>
-</div>
-{% endif %}
-
-<ul class="nav nav-tabs" role="tablist">
-    {% for service_id in services %}
-    {% if active_service_id == service_id %}
-        <li class="active"><a href="/services/{{ service_id }}">{{ services[service_id]['name'] }}</a></li>
+<ul class="nav nav-pills">
+    {% for service in services %}
+    {% if selected_service.id == service.id %}
+        <li class="active">
+            <a href="/services/{{ service.id }}">{{ service.name }}
+                <small style="color: #bbdcf8;">{{ service.city }}</small>
+            </a>
+        </li>
     {% else %}
-        <li><a href="/services/{{ service_id }}">{{ services[service_id]['name'] }}</a></li>
+        <li>
+            <a href="/services/{{ service.id }}">{{ service.name }}
+                <small style="color: #bbdcf8;">{{ service.city }}</small>
+            </a>
+        </li>
     {% endif %}
     {% endfor %}
 </ul>
+
+<h1>{{ selected_service.name }} <span style="color:lightgrey;">{{ selected_service.city }}</span> <a href="{{ selected_service.url }}" style="color:lightgray;font-size:50%"><span class="glyphicon glyphicon-link"></span></a></h1>
+
+<p class="bg-info station-information" style="padding: 15px;">Local time: {{ time }}</p>
 
 <table class="table">
     <thead>
@@ -25,23 +31,13 @@
       </tr>
     </thead>
     <tbody>
-{% for station in stations %}
+    {% for station in stations %}
       <tr>
         <td>
-
-        {% if stations.is_active == false %}
-        <del>
-        {% endif %}
-
-        <small style="color:#CCC">{{ station.station_id }}</small> {{ station.address }}
+        <small style="color:lightgray;">{{ station.station_id }}</small> {{ station.address }}
         {% if station.description != station.address %}
-        <small style="color:#CCC">{{ station.description }}</small>
+        <small style="color:lightgray;">{{ station.description }}</small>
         {% endif %}
-
-        {% if stations.is_active == false %}
-        </del>
-        {% endif %}
-
         <td>
             <div class="progress">
             {% if station['capacity'] == 0 %}
@@ -53,7 +49,7 @@
             </div>
         </td>
       </tr>
-{% endfor %}
+    {% endfor %}
     </tbody>
   </table>
 

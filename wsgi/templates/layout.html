@@ -5,10 +5,13 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment-with-locales.min.js"></script>
 <body role="document">
-    <div class=page>
+    <div style="padding-top:30px;" class=page>
         <div class="container" role="main">
+            {% if title  %}
             <div class="page-header"><h1>{{ title }}</h1></div>
+            {% endif %}
             {% block body %}{% endblock %}
         </div>
     </div>

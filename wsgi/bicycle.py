@@ -10,16 +10,52 @@ from flask import Flask, request, flash, url_for, redirect, render_template, abo
 from random import randint
 import urllib.request
 from sqlalchemy import asc
+from pytz import timezone
 from wsgi.scrapers import *
 
 
 CRON_INTERVAL = 2
 SERVICES = {
-    'telofun': {'class': 'Telofun', 'name': 'Telofun', 'city': 'Tel Aviv'},
-    'bayareabikeshare': {'class': 'BayAreaBikeShare', 'name': 'Bay Area Bike Share', 'city': 'San Francisco'},
-    'bikesharetoronto': {'class': 'BikeShareToronto', 'name': 'Bike Share Toronto', 'city': 'Toronto'},
-    'citibikenyc': {'class': 'CityBikeNewYork', 'name': 'Citi Bike New York', 'city': 'New York'},
-    'divvybikes': {'class': 'DivvyBikes', 'name': 'Divvy', 'city': 'Chicago'}
+    'telofun': {
+        'class': 'Telofun',
+        'id': 'telofun',
+        'name': 'Telofun',
+        'city': 'Tel Aviv',
+        'url': 'https://www.tel-o-fun.co.il/en/HomePage.aspx',
+        'timezone': 'Asia/Jerusalem'
+    },
+    'bayareabikeshare': {
+        'class': 'BayAreaBikeShare',
+        'id': 'bayareabikeshare',
+        'name': 'Bike Share',
+        'city': 'Bay Area',
+        'url': 'http://www.bayareabikeshare.com',
+        'timezone': 'America/Los_Angeles'
+    },
+    'bikesharetoronto': {
+        'class': 'BikeShareToronto',
+        'id': 'bikesharetoronto',
+        'name': 'Bike Share',
+        'city': 'Toronto',
+        'url': 'http://www.bikesharetoronto.com',
+        'timezone': 'America/Toronto'
+    },
+    'citibikenyc': {
+        'class': 'CityBikeNewYork',
+        'id': 'citibikenyc',
+        'name': 'Citi Bike',
+        'city': 'New York',
+        'url': 'https://www.citibikenyc.com',
+        'timezone': 'America/New_York'
+    },
+    'divvybikes': {
+        'class': 'DivvyBikes',
+        'id': 'divvybikes',
+        'name': 'Divvy',
+        'city': 'Chicago',
+        'url': 'https://www.divvybikes.com',
+        'timezone': 'America/Chicago'
+    }
 }
 
 app = Flask(__name__)
@@ -29,11 +65,6 @@ app.config.update(
     JSON_SORT_KEYS=False
 )
 db = SQLAlchemy(app)
-
-def create_services_list():
-    SERVICES = {}
-
-create_services_list()
 
 class Station(db.Model):
     __tablename__ = 'stations'
@@ -140,7 +171,7 @@ def hello():
 def ping():
     response = urllib.request.urlopen('http://pingpong-zats.rhcloud.com/pong')
     print("Pong response: %s" % response.read().decode('utf-8'))
-    return "Pong";
+    return "Pong"
 
 @app.route("/db/setup")
 def setup_db():
@@ -172,15 +203,27 @@ def test_db():
     return result
 
 
+@app.route("/services/")
+def all_service():
+    return jsonify(services=list(SERVICES.values()))
+
 @app.route("/services/<active_service_id>")
 def all_statistics(active_service_id):
     if active_service_id not in SERVICES:
         abort(404)
 
     stations = Station.query.filter(Station.service == active_service_id).order_by(asc(Station.station_id))
+    services = list(SERVICES.values())
+    services = sorted(services, key=lambda item: item['name'])
 
-    return render_template('stations.html', title="Services", services=SERVICES, active_service_id=active_service_id, stations=stations)
+    selected_service = SERVICES[active_service_id]
 
+    current_time = datetime.now(timezone(selected_service['timezone'])).time().strftime("%I:%M %p")
+
+    return render_template('stations.html',
+                           services=services, selected_service=selected_service,
+                           stations=stations,
+                           time=current_time)
 
 @app.route("/api/1/<service>/scrape")
 def scrape_for_service(service, swallaw_exceptions=True):
