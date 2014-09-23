@@ -11,7 +11,7 @@ with app.app_context():
     for service_id, service_dict in SERVICES.items():
         print("Hello from the scraper %s" % service_id)
         try:
-            with newrelic.agent.BackgroundTask(newrelic_app):
+            with newrelic.agent.BackgroundTask(newrelic_app, name='scrape_for_service'):
                 scrape_for_service(service_id, False)
         except Exception as e:
             print("Failed to scrape '%s'" % e)
