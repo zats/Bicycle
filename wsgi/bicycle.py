@@ -228,7 +228,7 @@ def all_statistics(active_service_id):
 
 
 @app.route("/api/1/<service>/scrape")
-@newrelic.agent.background_task()
+@newrelic.agent.background_task(name='scraper', group='Task')
 def scrape_for_service(service, swallaw_exceptions=True):
     if service not in SERVICES:
         return error_response(404, "Service \"" + service + "\" is not found")
