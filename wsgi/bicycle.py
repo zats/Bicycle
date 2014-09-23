@@ -12,6 +12,7 @@ import urllib.request
 from sqlalchemy import asc
 from pytz import timezone
 from wsgi.scrapers import *
+import newrelic.agent
 
 
 CRON_INTERVAL = 2
@@ -225,6 +226,8 @@ def all_statistics(active_service_id):
                            stations=stations,
                            time=current_time)
 
+
+@newrelic.agent.background_task()
 @app.route("/api/1/<service>/scrape")
 def scrape_for_service(service, swallaw_exceptions=True):
     if service not in SERVICES:
