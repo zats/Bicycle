@@ -27,7 +27,7 @@ class TelofunScraper(BaseScraper):
         if script is None:
             raise ParsingErrorException()
 
-        regex = "setMarker\(([\d\.\-]+),([\d\.\-]+),([\d]+),'(.*?)','(.*?)','(\d*?)', '(\d*?)'"
+        regex = "setMarker\(([\d\.\-]+),([\d\.\-]+),([\d]+),'(.*?)','(.*?)','([\d\-]*?)', '([\d\-]*?)'"
         raw_markers = re.findall(regex, script)
         markers = {}
         for raw_marker in raw_markers:
@@ -39,7 +39,11 @@ class TelofunScraper(BaseScraper):
     def parse_marker(marker_object):
         station_id = marker_object[2]
         capacity = int(marker_object[5])
+        if capacity < 0:
+            capacity = 0
         available_docks = int(marker_object[6])
+        if available_docks < 0:
+            available_docks = 0
         available_bicycles = capacity - available_docks
         result = {
             'latitude': float(marker_object[0]),
