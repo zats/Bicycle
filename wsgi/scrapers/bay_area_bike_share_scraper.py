@@ -10,3 +10,6 @@ class BayAreaBikeShareScraper(DanielGohlkeScrapper):
 
     def service_url(self):
         return 'http://www.bayareabikeshare.com/stations/json'
+
+    def parse_address(self, raw_station):
+        return raw_station['location']
