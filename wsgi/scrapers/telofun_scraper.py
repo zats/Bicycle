@@ -46,8 +46,8 @@ class TelofunScraper(BaseScraper):
             available_docks = 0
         available_bicycles = capacity - available_docks
         result = {
-            'latitude': float(marker_object[0]),
-            'longitude': float(marker_object[1]),
+            'latitude': float(marker_object[1]),
+            'longitude': float(marker_object[0]),
             'station_id': station_id,
             'address': marker_object[3],
             'description': marker_object[4],
