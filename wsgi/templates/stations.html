@@ -1,58 +1,104 @@
 {% extends "layout.html" %}
 {% block body %}
+<script type="application/javascript">
+var stations = [{% for station in stations %}{{ dumps(station.to_dict(), separators=(',',':')) | safe }},{% endfor %}];
+var current_index = 0;
+var items_per_page = 10;
 
-<ul class="nav nav-pills">
-    {% for service in services %}
-    {% if selected_service.id == service.id %}
-        <li class="active">
-            <a href="/services/{{ service.id }}">{{ service.name }}
-                <small style="color: #bbdcf8;">{{ service.city }}</small>
-            </a>
-        </li>
-    {% else %}
-        <li>
-            <a href="/services/{{ service.id }}">{{ service.name }}
-                <small style="color: #bbdcf8;">{{ service.city }}</small>
-            </a>
-        </li>
-    {% endif %}
-    {% endfor %}
+$(document).ready(function(){
+    $(".next").children("a").click(function(){
+        current_index++;
+        update_table_view();
+        scroll_to_top();
+        return false;
+    });
+    $('.next').css( 'cursor', 'pointer' );
+    $(".previous").children("a").click(function(){
+        current_index--;
+        update_table_view();
+        scroll_to_top();
+        return false;
+    });
+    $('.previous').css( 'cursor', 'pointer' );
+
+    update_table_view();
+});
+
+function scroll_to_top() {
+    $("html, body").animate({ scrollTop: 0 });
+}
+
+function update_table_view() {
+    var min_visible_index = current_index * items_per_page;
+    var max_visible_index = Math.min((current_index + 1) * items_per_page, stations.length);
+
+    if (current_index == 0) {
+        $(".previous").addClass("disabled");
+    } else {
+        $(".previous").removeClass("disabled");
+    }
+
+    if (max_visible_index >= stations.length) {
+        $(".next").addClass("disabled");
+    } else {
+        $(".next").removeClass("disabled");
+    }
+
+    $(".stations_table_body").empty()
+    for (var i = min_visible_index; i < max_visible_index; ++i) {
+        var station = stations[i];
+
+        var station_info = '<small style="color:lightgray;">' + station.id + '</small> <a href="http://maps.google.com/maps?q=' + station.latitude + ',' + station.longitude + '">' + station.address + '</a> <small style="color:lightgray;">' + station.description + '</small>';
+
+        var bicycles_percentage = Math.round(station.available_bicycles / station.capacity * 100);
+        var docks_percentage = Math.round(station.available_docks / station.capacity * 100);
+        var unavailable_items = 100 - docks_percentage - bicycles_percentage;
+        var availability_string = '<div class="progress" ' +
+                    'data-toggle="tooltip" data-placement="left" title="Capacity: ' + station.capacity + '; Avilable docks: ' + station.available_docks + '">'
+        if (unavailable_items != 0) {
+            var unavailable_units = station.capacity - station.available_docks - station.available_bicycles;
+            availability_string += '<div class="progress-bar progress-bar-danger" role="progressbar" ' +
+                    'data-toggle="tooltip" data-placement="left" title="' + unavailable_units + ' ' +
+                    (unavailable_units == 1 ? 'unit' : 'units') + ' unavailable"' +
+                    ' style="width: ' + unavailable_items + '%;"></div>';
+        }
+        availability_string += '<div class="progress-bar progress-bar-success" ' +
+                'data-toggle="tooltip" data-placement="left" title="Available bicycles: ' + station.available_bicycles + '" ' +
+                'role="progressbar" style="width: ' + bicycles_percentage + '%"></div>'
+        availability_string += '</div>';
+        $(".stations_table_body").append("<tr><td>" + station_info + "</td><td>" + availability_string + "</td>/tr>")
+    }
+}
+</script>
+
+<ul class="nav nav-pills">{% for service in services %}{% if selected_service.id == service.id %}
+    <li class="active">
+        <a href="/services/{{ service.id }}">{{ service.name }} <small style="color: #bbdcf8;">{{ service.city }}</small></a>
+    </li>{% else %}
+    <li>
+        <a href="/services/{{ service.id }}">{{ service.name }} <small style="color: #bbdcf8;">{{ service.city }}</small></a>
+    </li>{% endif %}{% endfor %}
 </ul>
-
-<h1>{{ selected_service.name }} <span style="color:lightgrey;">{{ selected_service.city }}</span> <a href="{{ selected_service.url }}" style="color:lightgray;font-size:50%"><span class="glyphicon glyphicon-link"></span></a></h1>
-
+<div class="page-header">
+  <h1><a href="{{ selected_service.url }}"><span class="glyphicon glyphicon-link"></span></a> {{ selected_service.name }} <small>{{ selected_service.city }}</small></h1>
+</div>
 <p class="bg-info station-information" style="padding: 15px;">Local time: {{ time }}</p>
 
+<ul class="pager">
+  <li class="previous"><a>← Previous</a></li>
+  <li class="next"><a>Next →</a></li>
+</ul>
+
 <table class="table">
-    <thead>
-      <tr>
-        <th>Station</th>
-        <th width="30%">Availability</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for station in stations %}
-      <tr>
-        <td>
-        <small style="color:lightgray;">{{ station.station_id }}</small> {{ station.address }}
-        {% if station.description != station.address %}
-        <small style="color:lightgray;">{{ station.description }}</small>
-        {% endif %}
-        <td>
-            <div class="progress">
-            {% if station['capacity'] == 0 %}
-                <div class="progress-bar progress-bar-danger" role="progressbar" style="width: 100%;"><span class="sr-only"></span></div>
-            {% else %}
-                <div class="progress-bar progress-bar-danger" role="progressbar" style="width: {{ (station.capacity - station.available_docks - station.available_bicycles) / station.capacity * 100 }}%;"><span class="sr-only"></span></div>
-                <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{ station.available_bicycles / station.capacity * 100 }}%"><span class="sr-only">Available bicycles: {{ station.available_bicycles }}</span></div>
-            {% endif %}
-            </div>
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+<thead>
+    <tr><th>Station</th><th width="30%">Availability</th></tr>
+</thead>
+<tbody class="stations_table_body"></tbody>
+</table>
 
-
+<ul class="pager">
+  <li class="previous"><a>← Previous</a></li>
+  <li class="next"><a>Next →</a></li>
+</ul>
 
 {% endblock %}

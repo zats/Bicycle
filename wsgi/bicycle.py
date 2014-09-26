@@ -1,3 +1,5 @@
+import json
+
 __author__ = 'zats'
 
 
@@ -224,7 +226,8 @@ def all_statistics(active_service_id):
     return render_template('stations.html',
                            services=services, selected_service=selected_service,
                            stations=stations,
-                           time=current_time)
+                           time=current_time,
+                           dumps=json.dumps)
 
 
 @newrelic.agent.background_task()
