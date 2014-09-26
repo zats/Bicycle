@@ -230,6 +230,7 @@ def all_statistics(active_service_id):
                            dumps=json.dumps)
 
 
+@app.route("/api/1/<service>/scrape")
 @newrelic.agent.background_task()
 def scrape_for_service(service, swallaw_exceptions=True):
     if service not in SERVICES:
