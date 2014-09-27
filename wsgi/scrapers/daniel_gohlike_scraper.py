@@ -6,8 +6,7 @@ from abc import ABCMeta
 from wsgi.scrapers.base_scraper import BaseScraper
 
 
-class DanielGohlkeScrapper(BaseScraper):
-    __metaclass__ = ABCMeta
+class DanielGohlkeScrapper(BaseScraper, metaclass=ABCMeta):
 
     def scrape(self, url):
         json_data = self.open_url(url)

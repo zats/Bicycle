@@ -3,15 +3,35 @@ __author__ = 'zats'
 
 import re
 from bs4 import BeautifulSoup
+from wsgi.Mapping import *
 from wsgi.custom_exceptions import ParsingErrorException
-from wsgi.scrapers.base_scraper import BaseScraper
+from wsgi.scrapers.base_scraper import BaseScraper, ServiceRegion
 
 
 class TelofunScraper(BaseScraper):
-    def service_name(self):
+
+    @classmethod
+    def service_regions(cls):
+        return [ServiceRegion('Tel Aviv', CoordinateRegion(32.05042486766724, 34.7494391860962, 32.125325127602984, 34.83595652008057))]
+
+    @classmethod
+    def name(cls):
+        return 'Telofun'
+
+    @classmethod
+    def timezone_name(cls):
+        return 'Asia/Jerusalem'
+
+    @classmethod
+    def service_id(cls):
         return 'telofun'
 
-    def service_url(self):
+    @classmethod
+    def website_url(cls):
+        return 'https://www.tel-o-fun.co.il/en'
+
+    @classmethod
+    def service_url(cls):
         return 'https://www.tel-o-fun.co.il/en/TelOFunLocations.aspx'
 
     def scrape(self, url):

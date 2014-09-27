@@ -1,7 +1,4 @@
-import json
-
 __author__ = 'zats'
-
 
 import io
 import csv
@@ -11,55 +8,31 @@ from flask.ext.sqlalchemy import *
 from flask import Flask, request, flash, url_for, redirect, render_template, abort, jsonify
 from random import randint
 import urllib.request
+import json
 from sqlalchemy import asc
 from pytz import timezone
 from wsgi.scrapers import *
+from wsgi.utilities import all_subclasses_of_class
 import newrelic.agent
 
 
-CRON_INTERVAL = 2
-SERVICES = {
-    'telofun': {
-        'class': 'Telofun',
-        'id': 'telofun',
-        'name': 'Telofun',
-        'city': 'Tel Aviv',
-        'url': 'https://www.tel-o-fun.co.il/en/HomePage.aspx',
-        'timezone': 'Asia/Jerusalem'
-    },
-    'bayareabikeshare': {
-        'class': 'BayAreaBikeShare',
-        'id': 'bayareabikeshare',
-        'name': 'Bike Share',
-        'city': 'Bay Area',
-        'url': 'http://www.bayareabikeshare.com',
-        'timezone': 'America/Los_Angeles'
-    },
-    'bikesharetoronto': {
-        'class': 'BikeShareToronto',
-        'id': 'bikesharetoronto',
-        'name': 'Bike Share',
-        'city': 'Toronto',
-        'url': 'http://www.bikesharetoronto.com',
-        'timezone': 'America/Toronto'
-    },
-    'citibikenyc': {
-        'class': 'CityBikeNewYork',
-        'id': 'citibikenyc',
-        'name': 'Citi Bike',
-        'city': 'New York',
-        'url': 'https://www.citibikenyc.com',
-        'timezone': 'America/New_York'
-    },
-    'divvybikes': {
-        'class': 'DivvyBikes',
-        'id': 'divvybikes',
-        'name': 'Divvy',
-        'city': 'Chicago',
-        'url': 'https://www.divvybikes.com',
-        'timezone': 'America/Chicago'
-    }
-}
+scrapers = {}
+
+
+def setup():
+    subclasses = all_subclasses_of_class(BaseScraper)
+    for scraper_class in subclasses:
+        scraper_id = scraper_class.service_id()
+        scrapers[scraper_id] = {
+            'id': scraper_id,
+            'class': scraper_class,
+            'name': scraper_class.name(),
+            'regions': scraper_class.service_regions(),
+            'timezone': scraper_class.timezone_name(),
+            'url': scraper_class.website_url()
+
+        }
+
 
 app = Flask(__name__)
 app.config.from_pyfile('app.cfg')
@@ -68,6 +41,8 @@ app.config.update(
     JSON_SORT_KEYS=False
 )
 db = SQLAlchemy(app)
+setup()
+
 
 class Station(db.Model):
     __tablename__ = 'stations'
@@ -176,6 +151,7 @@ def ping():
     print("Pong response: %s" % response.read().decode('utf-8'))
     return "Pong"
 
+
 @app.route("/db/setup")
 def setup_db():
     try:
@@ -208,18 +184,19 @@ def test_db():
 
 @app.route("/services/")
 def all_service():
-    return jsonify(services=list(SERVICES.values()))
+    return jsonify(services=list(scrapers.values()))
+
 
 @app.route("/services/<active_service_id>")
 def all_statistics(active_service_id):
-    if active_service_id not in SERVICES:
+    if active_service_id not in scrapers:
         abort(404)
 
     stations = Station.query.filter(Station.service == active_service_id).order_by(asc(Station.station_id))
-    services = list(SERVICES.values())
+    services = list(scrapers.values())
     services = sorted(services, key=lambda item: item['name'])
 
-    selected_service = SERVICES[active_service_id]
+    selected_service = scrapers[active_service_id]
 
     current_time = datetime.now(timezone(selected_service['timezone'])).time().strftime("%I:%M %p")
 
@@ -232,18 +209,18 @@ def all_statistics(active_service_id):
 
 @app.route("/api/1/<service>/scrape")
 @newrelic.agent.background_task()
-def scrape_for_service(service, swallaw_exceptions=True):
-    if service not in SERVICES:
+def scrape_for_service(service, swallow_exceptions=True):
+    if service not in scrapers:
         return error_response(404, "Service \"" + service + "\" is not found")
 
-    service_object = SERVICES[service]
+    service_object = scrapers[service]
     try:
-        service_class = eval(service_object['class'] + 'Scraper')
+        service_class = service_object['class']
         scraper = service_class()
         markers = scraper.scrape(scraper.service_url())
         update_with_dictionary(service, markers)
     except Exception as e:
-        if swallaw_exceptions:
+        if swallow_exceptions:
             return error_response(500, str(e))
         else:
             raise e
@@ -253,7 +230,7 @@ def scrape_for_service(service, swallaw_exceptions=True):
 
 @app.route("/api/1/<service>/stations")
 def fetch_stations_for_service(service):
-    if service not in SERVICES:
+    if service not in scrapers:
         abort(404)
 
     stations = Station.query.filter(Station.service == service).order_by(asc(Station.station_id))
@@ -366,4 +343,3 @@ def array_from_parameter(string):
 
 if __name__ == "__main__":
     app.run(debug=True)
-

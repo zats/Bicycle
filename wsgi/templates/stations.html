@@ -25,7 +25,7 @@ $(document).ready(function(){
 });
 
 function scroll_to_top() {
-    $("html, body").animate({ scrollTop: 0 });
+//    $("html, body").animate({ scrollTop: 0 });
 }
 
 function update_table_view() {
@@ -48,7 +48,11 @@ function update_table_view() {
     for (var i = min_visible_index; i < max_visible_index; ++i) {
         var station = stations[i];
 
-        var station_info = '<small style="color:lightgray;">' + station.id + '</small> <a href="http://maps.google.com/maps?q=' + station.latitude + ',' + station.longitude + '">' + station.address + '</a> <small style="color:lightgray;">' + station.description + '</small>';
+        var station_info = '<small style="color:lightgray;">' + station.id + '</small> ' +
+                '<a href="http://maps.google.com/maps?q=' + station.latitude + ',' + station.longitude + '">' + station.address + '</a> ' +
+                '<small style="color:lightgray;">' + station.description + '<br/>' +
+                'Updated ' + moment.utc(station.updated_at, 'X').format() +
+                '</small>';
 
         var bicycles_percentage = Math.round(station.available_bicycles / station.capacity * 100);
         var docks_percentage = Math.round(station.available_docks / station.capacity * 100);
@@ -73,10 +77,10 @@ function update_table_view() {
 
 <ul class="nav nav-pills">{% for service in services %}{% if selected_service.id == service.id %}
     <li class="active">
-        <a href="/services/{{ service.id }}">{{ service.name }} <small style="color: #bbdcf8;">{{ service.city }}</small></a>
+        <a href="/services/{{ service.id }}">{{ service.name }} <small style="color: #bbdcf8;">{{ service.regions[0].city }}</small></a>
     </li>{% else %}
     <li>
-        <a href="/services/{{ service.id }}">{{ service.name }} <small style="color: #bbdcf8;">{{ service.city }}</small></a>
+        <a href="/services/{{ service.id }}">{{ service.name }} <small style="color: #bbdcf8;">{{ service.regions[0].city }}</small></a>
     </li>{% endif %}{% endfor %}
 </ul>
 <div class="page-header">
