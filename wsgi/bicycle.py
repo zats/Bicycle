@@ -2,7 +2,7 @@ __author__ = 'zats'
 
 import io
 import csv
-from datetime import datetime
+from datetime import datetime, timezone
 from flask.ext.compress import Compress
 from flask.ext.sqlalchemy import *
 from flask import Flask, request, flash, url_for, redirect, render_template, abort, jsonify
@@ -10,7 +10,6 @@ from random import randint
 import urllib.request
 import json
 from sqlalchemy import asc
-from pytz import timezone
 from wsgi.scrapers import *
 from wsgi.utilities import all_subclasses_of_class
 import newrelic.agent
@@ -56,8 +55,8 @@ class Station(db.Model):
     capacity = db.Column(db.Integer)
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
-    created_at = db.Column(db.DateTime)
-    updated_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean)
 
     def __init__(self, service, dictionary):
@@ -68,8 +67,6 @@ class Station(db.Model):
         for key in expected_keys:
             setattr(self, key, dictionary[key])
         self.service = service
-        self.created_at = datetime.utcnow()
-        self.updated_at = datetime.utcnow()
         pass
 
     def update(self, dictionary):
@@ -96,8 +93,8 @@ class Station(db.Model):
             'available_bicycles': self.available_bicycles,
             'available_docks': self.available_docks,
             'capacity': self.capacity,
-            'created_at': self.created_at.timestamp(),
-            'updated_at': self.updated_at.timestamp(),
+            'created_at': self.created_at.replace(tzinfo=timezone.utc).timestamp(),
+            'updated_at': self.updated_at.replace(tzinfo=timezone.utc).timestamp(),
             'is_active': self.is_active
         }
 
@@ -109,10 +106,10 @@ class StationInfo(db.Model):
     station_id = db.Column(db.String)
     available_bicycles = db.Column(db.Float)
     available_docks = db.Column(db.Float)
-    samples_count = db.Column(db.Integer)
+    samples_count = db.Column(db.Integer, default=1)
     hour_of_week = db.Column(db.Float)
-    created_at = db.Column(db.DateTime)
-    updated_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __init__(self, service, dictionary, hour_of_week):
         self.service = service
@@ -120,9 +117,6 @@ class StationInfo(db.Model):
         self.available_bicycles = dictionary['available_bicycles']
         self.available_docks = dictionary['available_docks']
         self.hour_of_week = hour_of_week
-        self.created_at = datetime.utcnow()
-        self.updated_at = datetime.utcnow()
-        self.samples_count = 1
         pass
 
     def update(self, dictionary):
@@ -198,7 +192,7 @@ def all_statistics(active_service_id):
 
     selected_service = scrapers[active_service_id]
 
-    current_time = datetime.now(timezone(selected_service['timezone'])).time().strftime("%I:%M %p")
+    current_time = 'Unknown'
 
     return render_template('stations.html',
                            services=services, selected_service=selected_service,

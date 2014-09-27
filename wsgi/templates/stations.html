@@ -51,7 +51,7 @@ function update_table_view() {
         var station_info = '<small style="color:lightgray;">' + station.id + '</small> ' +
                 '<a href="http://maps.google.com/maps?q=' + station.latitude + ',' + station.longitude + '">' + station.address + '</a> ' +
                 '<small style="color:lightgray;">' + station.description + '<br/>' +
-                'Updated ' + moment.utc(station.updated_at, 'X').format() +
+                'Last changed: ' + moment.utc(station.updated_at, 'X').fromNow() +
                 '</small>';
 
         var bicycles_percentage = Math.round(station.available_bicycles / station.capacity * 100);
