@@ -43,10 +43,11 @@ function update_table_view() {
         var station = stations[i];
 
         var station_info = '<small style="color:lightgray;">' + station.id + '</small> ' +
-                '<a href="http://maps.google.com/maps?q=' + station.latitude + ',' + station.longitude + '">' + station.address + '</a> ' +
-                '<small style="color:lightgray;">' + station.description + '<br/>' +
-                'Last changed: ' + moment.utc(station.updated_at, 'X').fromNow() +
-                '</small>';
+                '<a href="http://maps.google.com/maps?q=' + station.latitude + ',' + station.longitude + '">' + station.address + '</a><br/>';
+        if (station.description != station.address) {
+            station_info += '<small style="color:lightgray;">' + station.description + ';</small> ';
+        }
+        station_info += '<small style="color:lightgray;">' + 'Last changed: ' + moment.utc(station.updated_at, 'X').fromNow() + '</small>';
 
         var bicycles_percentage = Math.round(station.available_bicycles / station.capacity * 100);
         var docks_percentage = Math.round(station.available_docks / station.capacity * 100);
