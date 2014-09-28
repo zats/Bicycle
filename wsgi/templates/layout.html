@@ -13,6 +13,19 @@
             {% if title  %}
             <div class="page-header"><h1>{{ title }}</h1></div>
             {% endif %}
+
+            <ul class="nav nav-pills">{% for service in services %}{% if selected_service.id == service.id %}
+                <li class="active">
+                    <a href="/services/{{ service.id }}">{{ service.name }} <small style="color: #bbdcf8;">{{ service.regions[0].city }}</small></a>
+                </li>{% else %}
+                <li>
+                    <a href="/services/{{ service.id }}">{{ service.name }} <small style="color: #bbdcf8;">{{ service.regions[0].city }}</small></a>
+                </li>{% endif %}{% endfor %}
+            </ul>
+            <div class="page-header">
+              <h1><a href="{{ selected_service.url }}"><span class="glyphicon glyphicon-link"></span></a> {{ selected_service.name }} <small>{{ selected_service.city }}</small></h1>
+            </div>
+
             {% block body %}{% endblock %}
         </div>
     </div>

@@ -1,3 +1,4 @@
+
 __author__ = 'zats'
 
 import io
@@ -128,9 +129,12 @@ class StationInfo(db.Model):
 
     def to_dict(self):
         return {
+            'samples_count': self.samples_count,
             'available_bicycles': self.available_bicycles,
             'available_docks': self.available_docks,
-            'hour_of_week': self.hour_of_week
+            'hour_of_week': self.hour_of_week,
+            'created_at': self.created_at.replace(tzinfo=timezone.utc).timestamp(),
+            'updated_at': self.updated_at.replace(tzinfo=timezone.utc).timestamp()
         }
 
 
@@ -187,11 +191,8 @@ def all_statistics(active_service_id):
         abort(404)
 
     stations = Station.query.filter(Station.service == active_service_id).order_by(asc(Station.station_id))
-    services = list(scrapers.values())
-    services = sorted(services, key=lambda item: item['name'])
-
+    services = sorted(list(scrapers.values()), key=lambda item: item['name'])
     selected_service = scrapers[active_service_id]
-
     current_time = 'Unknown'
 
     return render_template('stations.html',
@@ -200,6 +201,18 @@ def all_statistics(active_service_id):
                            time=current_time,
                            dumps=json.dumps)
 
+
+@app.route("/services/<service_id>/<station_id>")
+def station_statistics(service_id, station_id):
+    station_infos = StationInfo.query.filter(StationInfo.station_id == station_id, StationInfo.service == service_id)
+    station = Station.query.filter(Station.service == service_id, Station.station_id == station_id).first()
+    print("station %s", station)
+    services = sorted(list(scrapers.values()), key=lambda item: item['name'])
+    selected_service = scrapers[service_id]
+    return render_template('statistics.html',
+                           services=services, selected_service=selected_service,
+                           station_infos=station_infos, station=station,
+                           dumps=json.dumps)
 
 @app.route("/api/1/<service>/scrape")
 @newrelic.agent.background_task()
