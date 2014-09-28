@@ -6,7 +6,7 @@ from wsgi.scrapers.base_scraper import BaseScraper
 from wsgi.bicycle import *
 
 with app.app_context():
-    for service_id, service_dict in SERVICES.items():
+    for service_id, service_dict in scrapers.items():
         print("Hello from the scraper %s" % service_id)
         try:
             scrape_for_service(service_id, False)
