@@ -9,24 +9,18 @@ $(document).ready(function(){
     $(".next").children("a").click(function(){
         current_index++;
         update_table_view();
-        scroll_to_top();
         return false;
     });
     $('.next').css( 'cursor', 'pointer' );
     $(".previous").children("a").click(function(){
         current_index--;
         update_table_view();
-        scroll_to_top();
         return false;
     });
     $('.previous').css( 'cursor', 'pointer' );
 
     update_table_view();
 });
-
-function scroll_to_top() {
-//    $("html, body").animate({ scrollTop: 0 });
-}
 
 function update_table_view() {
     var min_visible_index = current_index * items_per_page;
@@ -59,16 +53,20 @@ function update_table_view() {
         var unavailable_items = 100 - docks_percentage - bicycles_percentage;
         var availability_string = '<div class="progress" ' +
                     'data-toggle="tooltip" data-placement="left" title="Capacity: ' + station.capacity + '; Avilable docks: ' + station.available_docks + '">'
-        if (unavailable_items != 0) {
-            var unavailable_units = station.capacity - station.available_docks - station.available_bicycles;
-            availability_string += '<div class="progress-bar progress-bar-danger" role="progressbar" ' +
-                    'data-toggle="tooltip" data-placement="left" title="' + unavailable_units + ' ' +
-                    (unavailable_units == 1 ? 'unit' : 'units') + ' unavailable"' +
-                    ' style="width: ' + unavailable_items + '%;"></div>';
+        if (station.is_active) {
+            if (unavailable_items != 0) {
+                var unavailable_units = station.capacity - station.available_docks - station.available_bicycles;
+                availability_string += '<div class="progress-bar progress-bar-danger" role="progressbar" ' +
+                        'data-toggle="tooltip" data-placement="left" title="' + unavailable_units + ' ' +
+                        (unavailable_units == 1 ? 'unit' : 'units') + ' unavailable"' +
+                        ' style="width: ' + unavailable_items + '%;"></div>';
+            }
+            availability_string += '<div class="progress-bar progress-bar-success" ' +
+                    'data-toggle="tooltip" data-placement="left" title="Available bicycles: ' + station.available_bicycles + '" ' +
+                    'role="progressbar" style="width: ' + bicycles_percentage + '%"></div>'
+        } else {
+            availability_string += '<div class="progress-bar progress-bar-danger" role="progressbar" data-toggle="tooltip" style="width:100%;"></div>';
         }
-        availability_string += '<div class="progress-bar progress-bar-success" ' +
-                'data-toggle="tooltip" data-placement="left" title="Available bicycles: ' + station.available_bicycles + '" ' +
-                'role="progressbar" style="width: ' + bicycles_percentage + '%"></div>'
         availability_string += '</div>';
         $(".stations_table_body").append("<tr><td>" + station_info + "</td><td>" + availability_string + "</td>/tr>")
     }
