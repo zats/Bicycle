@@ -193,12 +193,10 @@ def all_statistics(active_service_id):
     stations = Station.query.filter(Station.service == active_service_id).order_by(asc(Station.station_id))
     services = sorted(list(scrapers.values()), key=lambda item: item['name'])
     selected_service = scrapers[active_service_id]
-    current_time = 'Unknown'
 
     return render_template('stations.html',
                            services=services, selected_service=selected_service,
                            stations=stations,
-                           time=current_time,
                            dumps=json.dumps)
 
 
