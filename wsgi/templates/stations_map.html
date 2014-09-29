@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block body %}
+<script type="application/javascript">
+var lastInfoWindow;
+
+function initialize() {
+    var stations = [{% for station in stations %}{{ dumps(station.to_dict(), separators=(',',':')) | safe }},{% endfor %}];
+    var google_maps_region = {{ google_maps_region }};
+    console.log(google_maps_region);
+    var mapOptions = {
+        zoom: google_maps_region[2],
+        center: new google.maps.LatLng(google_maps_region[0], google_maps_region[1])
+    };
+    console.log(mapOptions);
+    var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+    for (station in stations) { station = stations[station];
+        var coordinate = new google.maps.LatLng(station.latitude, station.longitude)
+        var marker = new google.maps.Marker({
+            position: coordinate,
+            map: map,
+            title: station.address
+        });
+        var markerDescription = "<div class=\"marker-info\"><b>" + station.address + "</b>";
+        markerDescription += "<br/><small>Bicycles: " + station.available_bicycles + "; Docks: " + station.available_docks + ";";
+        markerDescription += " out of " + station.capacity + ";</small>";
+        markerDescription += "<br/><small>Last changed: " + moment.utc(station.updated_at, 'X').fromNow() + "</small>";
+        markerDescription += "</div>";
+        attachListenerForMarker(marker, markerDescription);
+    }
+}
+
+function attachListenerForMarker(marker, description) {
+
+    var infoWindow = new google.maps.InfoWindow({
+        content: description
+    });
+
+    google.maps.event.addListener(marker, 'click', function() {
+        if (lastInfoWindow) lastInfoWindow.close();
+        infoWindow.open(marker.get('map'), marker);
+        lastInfoWindow = infoWindow;
+    });
+}
+
+function loadScript() {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&' +
+      'callback=initialize';
+  document.body.appendChild(script);
+}
+
+window.onload = loadScript;
+</script>
+<div id="map" style="width:100%; height:100%"></div>
+{% endblock %}
