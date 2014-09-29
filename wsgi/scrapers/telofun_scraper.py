@@ -11,6 +11,10 @@ from wsgi.scrapers.base_scraper import BaseScraper, ServiceRegion
 class TelofunScraper(BaseScraper):
 
     @classmethod
+    def google_maps_region(cls):
+        return [32.0765638, 34.7780845, 14]
+
+    @classmethod
     def service_regions(cls):
         return [ServiceRegion('Tel Aviv', CoordinateRegion(32.05042486766724, 34.7494391860962, 32.125325127602984, 34.83595652008057))]
 

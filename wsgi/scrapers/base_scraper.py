@@ -17,8 +17,18 @@ class ServiceRegion(object):
         self.city = city
         self.region = region
 
+    def to_dict(self):
+        return {
+            'city': self.city,
+            'region': [[self.region.min_latitude, self.region.min_longitude], [self.region.max_longitude, self.region.max_longitude]]
+        }
+
 
 class BaseScraper(object, metaclass=ABCMeta):
+    @classmethod
+    @abstractmethod
+    def google_maps_region(cls):
+        pass
 
     @classmethod
     @abstractmethod
