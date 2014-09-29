@@ -4,16 +4,15 @@ __author__ = 'zats'
 import io
 import csv
 from datetime import datetime, timezone
-from flask.ext.compress import Compress
 from flask.ext.sqlalchemy import *
-from flask import Flask, request, flash, url_for, redirect, render_template, abort, jsonify
+from flask import Flask, request, render_template, abort, jsonify
 from random import randint
 import urllib.request
 import json
 from sqlalchemy import asc
 from wsgi.scrapers import *
-from wsgi.utilities import all_subclasses_of_class
 import newrelic.agent
+from wsgi.utilities.all_subclasses import all_subclasses_of_class
 
 
 scrapers = {}
@@ -29,8 +28,8 @@ def setup():
             'name': scraper_class.name(),
             'regions': scraper_class.service_regions(),
             'timezone': scraper_class.timezone_name(),
-            'url': scraper_class.website_url()
-
+            'url': scraper_class.website_url(),
+            'google_region': scraper_class.google_maps_region()
         }
 
 
@@ -193,10 +192,11 @@ def all_statistics(active_service_id):
     stations = Station.query.filter(Station.service == active_service_id).order_by(asc(Station.station_id))
     services = sorted(list(scrapers.values()), key=lambda item: item['name'])
     selected_service = scrapers[active_service_id]
-
-    return render_template('stations.html',
+    service_regions = list(map(lambda x: x.to_dict(), selected_service['regions']))
+    return render_template('stations_map.html',
                            services=services, selected_service=selected_service,
-                           stations=stations,
+                           stations=stations, service_regions=service_regions,
+                           google_maps_region=selected_service['google_region'],
                            dumps=json.dumps)
 
 
@@ -204,7 +204,6 @@ def all_statistics(active_service_id):
 def station_statistics(service_id, station_id):
     station_infos = StationInfo.query.filter(StationInfo.station_id == station_id, StationInfo.service == service_id)
     station = Station.query.filter(Station.service == service_id, Station.station_id == station_id).first()
-    print("station %s", station)
     services = sorted(list(scrapers.values()), key=lambda item: item['name'])
     selected_service = scrapers[service_id]
     return render_template('statistics.html',
