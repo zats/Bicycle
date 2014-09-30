@@ -3,6 +3,8 @@
 <script type="application/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.1.2/src/markerclusterer_packed.js"></script>
 <script type="application/javascript">
 var lastInfoWindow;
+var lastUpdatedHeatmap, bicyclesHeatmap, docksHeatmap;
+var map;
 
 function initialize() {
     var stations = [{% for station in stations %}{{ dumps(station.to_dict(), separators=(',',':')) | safe }},{% endfor %}];
@@ -13,28 +15,25 @@ function initialize() {
         center: new google.maps.LatLng(google_maps_region[0], google_maps_region[1])
     };
     console.log(mapOptions);
-    var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    map = new google.maps.Map(document.getElementById('map'), mapOptions);
     var markerImageURL = '{{ url_for('static', filename='marker@2x.png') }}';
     var markerImage = {
         url: markerImageURL,
         scaledSize: new google.maps.Size(9,24),
     };
-    var bikesHeatmap = [];
-    var docksHeatmap = [];
-    var lastUpdatedHeatmap = [];
-    var heatMapData = [];
     var markers = [];
+    var bicyclesHeatmapData = [], docksHeatmapData = [], lastUpdatedHeatmapData = [];
     for (station in stations) { station = stations[station];
         var coordinate = new google.maps.LatLng(station.latitude, station.longitude);
         var bikesWeight = 10 * (station.capacity ? station.available_bicycles / station.capacity : 0);
-        bikesHeatmap.push({location: coordinate, weight: bikesWeight});
+        bicyclesHeatmapData.push({location: coordinate, weight: bikesWeight});
 
         var docksWeight = 10 * (station.capacity ? station.available_docks / station.capacity : 0);
-        docksHeatmap.push({location: coordinate, weight: docksWeight});
+        docksHeatmapData.push({location: coordinate, weight: docksWeight});
 
         var secondsSinceUpdate = moment().utc().diff(moment.utc(station.updated_at * 1000), 'seconds');
         var lastUpdatedWight = 10 / secondsSinceUpdate;
-        lastUpdatedHeatmap.push({location: coordinate, weight: lastUpdatedWight});
+        lastUpdatedHeatmapData.push({location: coordinate, weight: lastUpdatedWight});
 
         var marker = new google.maps.Marker({
             position: coordinate,
@@ -49,17 +48,18 @@ function initialize() {
         attachListenerForMarker(marker, markerDescription);
         markers.push(marker);
     }
-    var gradient = ['rgba(0, 255, 255, 0)',    'rgba(0, 255, 255, 1)',    'rgba(0, 191, 255, 1)',    'rgba(0, 127, 255, 1)',    'rgba(0, 63, 255, 1)',    'rgba(0, 0, 255, 1)',
-    'rgba(0, 0, 223, 1)',    'rgba(0, 0, 191, 1)',    'rgba(0, 0, 159, 1)',    'rgba(0, 0, 127, 1)',    'rgba(63, 0, 91, 1)',    'rgba(127, 0, 63, 1)',
-    'rgba(191, 0, 31, 1)',    'rgba(255, 0, 0, 1)'  ];
-    var heatmap = new google.maps.visualization.HeatmapLayer({
-        data: lastUpdatedHeatmap,
+    lastUpdatedHeatmap = new google.maps.visualization.HeatmapLayer({
+        data: lastUpdatedHeatmapData,
         radius: 50,
-        //dissipating: false,
-        opacity: 0.6,
-        gradient: gradient,
     });
-    heatmap.setMap(map);
+    docksHeatmap = new google.maps.visualization.HeatmapLayer({
+        data: docksHeatmapData,
+        radius: 50,
+    });
+    bicyclesHeatmap = new google.maps.visualization.HeatmapLayer({
+        data: bicyclesHeatmapData,
+        radius: 50,
+    });
 
     var markerCluster = new MarkerClusterer(map, markers, {
         styles: [{
@@ -87,6 +87,12 @@ function attachListenerForMarker(marker, description) {
     });
 }
 
+function setup() {
+    loadScript();
+    setupDataSourceToggle();
+    setHeatmap(0);
+}
+
 function loadScript() {
   var script = document.createElement('script');
   script.type = 'text/javascript';
@@ -95,7 +101,35 @@ function loadScript() {
   document.body.appendChild(script);
 }
 
-window.onload = loadScript;
+function setupDataSourceToggle() {
+    $('.map-type').children().each(function(idx, child){
+        $(child).click(function(){
+            console.log("Setting heatmap to " + idx);
+            setHeatmap(idx);
+            return false;
+        });
+    });
+}
+
+function setHeatmap(index) {
+    lastUpdatedHeatmap.setMap(index == 0 ? map : null);
+    bicyclesHeatmap.setMap(index == 1 ? map : null);
+    docksHeatmap.setMap(index == 2 ? map : null);
+    $('.map-type').children().each(function(idx, child){
+        if (idx == index) {
+            $(child).addClass("active");
+        } else {
+            $(child).removeClass("active");
+        }
+    });
+}
+
+window.onload = setup;
 </script>
+<ul class="nav nav-pills map-type" style="margin-bottom: 20px;">
+  <li class="active"><a href="#">Dynamics</a></li>
+  <li><a href="#">Bicycles</a></li>
+  <li><a href="#">Docks</a></li>
+</ul>
 <div id="map" style="width: 100%; height: 70%;"></div>
 {% endblock %}
