@@ -14,43 +14,19 @@ function initialize() {
     console.log(mapOptions);
     var map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
+    var heatMapData = [];
     for (station in stations) { station = stations[station];
         var coordinate = new google.maps.LatLng(station.latitude, station.longitude);
         var seconds = moment().utc().diff(moment.utc(station.updated_at * 1000), 'seconds');
-        console.log(seconds );
-        var minutes = seconds / 60;
-        var hours = minutes / 60;
-        var suffix = '1';
-        if (seconds < 120) {
-            suffix = '1';
-        } else if (minutes < 2) {
-            suffix = '0.8';
-        } else if (minutes < 5) {
-            suffix = '0.6';
-        } else if (hours < 10) {
-            suffix = '0.4';
-        } else {
-            suffix = '0.2';
-        }
-        var path = "{{ url_for('static', filename='marker_1.png') }}".replace("1", suffix);
-        var image = {
-            url: path,
-            size: new google.maps.Size(20, 20),
-            anchor: new google.maps.Point(10, 10)
-        };
-        var marker = new google.maps.Marker({
-            position: coordinate,
-            map: map,
-            icon: image,
-            title: station.address,
-        });
-        var markerDescription = "<div class=\"marker-info\"><b>" + station.address + "</b>";
-        markerDescription += "<br/>B: " + station.available_bicycles + " D: " + station.available_docks;
-        markerDescription += " C " + station.capacity + "";
-        markerDescription += "<br/><small>Last changed: " + moment.utc(station.updated_at, 'X').fromNow() + "</small>";
-        markerDescription += "</div>";
-        attachListenerForMarker(marker, markerDescription);
+        var weightedLocation = {location: coordinate, weight: 100 / seconds};
+        console.log(weightedLocation);
+        heatMapData.push(weightedLocation);
     }
+    var heatmap = new google.maps.visualization.HeatmapLayer({
+        data: heatMapData,
+        radius: 20
+    });
+    heatmap.setMap(map);
 }
 
 function attachListenerForMarker(marker, description) {
@@ -69,7 +45,7 @@ function attachListenerForMarker(marker, description) {
 function loadScript() {
   var script = document.createElement('script');
   script.type = 'text/javascript';
-  script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&' +
+  script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=visualization&' +
       'callback=initialize';
   document.body.appendChild(script);
 }
