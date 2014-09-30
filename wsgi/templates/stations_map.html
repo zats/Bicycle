@@ -19,14 +19,22 @@ function initialize() {
         url: markerImageURL,
         scaledSize: new google.maps.Size(9,24),
     };
+    var bikesHeatmap = [];
+    var docksHeatmap = [];
+    var lastUpdatedHeatmap = [];
     var heatMapData = [];
     var markers = [];
     for (station in stations) { station = stations[station];
         var coordinate = new google.maps.LatLng(station.latitude, station.longitude);
-        var seconds = moment().utc().diff(moment.utc(station.updated_at * 1000), 'seconds');
-        var weightedLocation = {location: coordinate, weight: 100 / seconds};
-        console.log(weightedLocation);
-        heatMapData.push(weightedLocation);
+        var bikesWeight = 10 * (station.capacity ? station.available_bicycles / station.capacity : 0);
+        bikesHeatmap.push({location: coordinate, weight: bikesWeight});
+
+        var docksWeight = 10 * (station.capacity ? station.available_docks / station.capacity : 0);
+        docksHeatmap.push({location: coordinate, weight: docksWeight});
+
+        var secondsSinceUpdate = moment().utc().diff(moment.utc(station.updated_at * 1000), 'seconds');
+        var lastUpdatedWight = 10 / secondsSinceUpdate;
+        lastUpdatedHeatmap.push({location: coordinate, weight: lastUpdatedWight});
 
         var marker = new google.maps.Marker({
             position: coordinate,
@@ -41,9 +49,15 @@ function initialize() {
         attachListenerForMarker(marker, markerDescription);
         markers.push(marker);
     }
+    var gradient = ['rgba(0, 255, 255, 0)',    'rgba(0, 255, 255, 1)',    'rgba(0, 191, 255, 1)',    'rgba(0, 127, 255, 1)',    'rgba(0, 63, 255, 1)',    'rgba(0, 0, 255, 1)',
+    'rgba(0, 0, 223, 1)',    'rgba(0, 0, 191, 1)',    'rgba(0, 0, 159, 1)',    'rgba(0, 0, 127, 1)',    'rgba(63, 0, 91, 1)',    'rgba(127, 0, 63, 1)',
+    'rgba(191, 0, 31, 1)',    'rgba(255, 0, 0, 1)'  ];
     var heatmap = new google.maps.visualization.HeatmapLayer({
-        data: heatMapData,
-        radius: 20
+        data: lastUpdatedHeatmap,
+        radius: 50,
+        //dissipating: false,
+        opacity: 0.6,
+        gradient: gradient,
     });
     heatmap.setMap(map);
 
