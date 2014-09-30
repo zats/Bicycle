@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+<script type="application/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.1.2/src/markerclusterer_packed.js"></script>
 <script type="application/javascript">
 var lastInfoWindow;
 
@@ -13,20 +14,50 @@ function initialize() {
     };
     console.log(mapOptions);
     var map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
+    var markerImageURL = '{{ url_for('static', filename='marker@2x.png') }}';
+    var markerImage = {
+        url: markerImageURL,
+        scaledSize: new google.maps.Size(9,24),
+    };
     var heatMapData = [];
+    var markers = [];
     for (station in stations) { station = stations[station];
         var coordinate = new google.maps.LatLng(station.latitude, station.longitude);
         var seconds = moment().utc().diff(moment.utc(station.updated_at * 1000), 'seconds');
         var weightedLocation = {location: coordinate, weight: 100 / seconds};
         console.log(weightedLocation);
         heatMapData.push(weightedLocation);
+
+        var marker = new google.maps.Marker({
+            position: coordinate,
+            icon: markerImage,
+            title: station.address,
+        });
+        var markerDescription = "<div class=\"marker-info\"><b>" + station.address + "</b>";
+        markerDescription += "<br/>B: " + station.available_bicycles + " D: " + station.available_docks;
+        markerDescription += " C " + station.capacity + "";
+        markerDescription += "<br/><small>Last changed: " + moment.utc(station.updated_at, 'X').fromNow() + "</small>";
+        markerDescription += "</div>";
+        attachListenerForMarker(marker, markerDescription);
+        markers.push(marker);
     }
     var heatmap = new google.maps.visualization.HeatmapLayer({
         data: heatMapData,
         radius: 20
     });
     heatmap.setMap(map);
+
+    var markerCluster = new MarkerClusterer(map, markers, {
+        styles: [{
+            url: '{{ url_for('static', filename='marker-group.png') }}',
+            width: 9,
+            height: 24,
+            anchorIcon: [4.5, 24],
+            anchorText: [4, 0],
+            textColor: 'gray',
+            textSize: 10
+        }]
+    });
 }
 
 function attachListenerForMarker(marker, description) {
