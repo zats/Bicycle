@@ -72,6 +72,9 @@ function initialize() {
             textSize: 10
         }]
     });
+
+    setupDataSourceToggle();
+    setHeatmap(0);
 }
 
 function attachListenerForMarker(marker, description) {
@@ -89,8 +92,6 @@ function attachListenerForMarker(marker, description) {
 
 function setup() {
     loadScript();
-    setupDataSourceToggle();
-    setHeatmap(0);
 }
 
 function loadScript() {
