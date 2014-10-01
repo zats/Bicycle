@@ -307,9 +307,9 @@ def update_with_dictionary(service, dictionary):
 
     # Station info
     dictionary_copy = dictionary.copy()
-    fetched_station_infos = StationInfo.query.filter(StationInfo.station_id.in_(station_ids),
-                                                     StationInfo.service == service,
-                                                     StationInfo.hour_of_week == hour_of_week)
+    fetched_station_infos = StationInfo.query.filter(StationInfo.service == service,
+                                                     StationInfo.hour_of_week == hour_of_week,
+                                                     StationInfo.station_id.in_(station_ids))
 
     # Update existent
     for station_info in fetched_station_infos:
