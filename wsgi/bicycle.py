@@ -179,9 +179,26 @@ def test_db():
     return result
 
 
-@app.route("/services/")
+@app.route("/api/1/services/")
 def all_service():
-    return jsonify(services=list(scrapers.values()))
+    services = []
+    for scraper in scrapers.values():
+        regions = []
+        for region in scraper['regions']:
+            print("region.city %s", region.city)
+            regions.append({
+                'city': region.city,
+                'region': [[region.region.min_latitude, region.region.max_latitude], [region.region.min_longitude, region.region.max_longitude]]
+            })
+        services.append({
+            'id': scraper['id'],
+            'name': scraper['name'],
+            'timezone': scraper['timezone'],
+            'url': scraper['url'],
+            'regions': regions,
+            'googleMapsRegion': scraper['google_region']
+        })
+    return jsonify(services=services)
 
 
 @app.route("/services/<active_service_id>")
