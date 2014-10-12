@@ -185,7 +185,6 @@ def all_service():
     for scraper in scrapers.values():
         regions = []
         for region in scraper['regions']:
-            print("region.city %s", region.city)
             regions.append({
                 'city': region.city,
                 'region': [[region.region.min_latitude, region.region.max_latitude], [region.region.min_longitude, region.region.max_longitude]]
