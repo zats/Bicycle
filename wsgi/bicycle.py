@@ -248,7 +248,7 @@ def scrape_for_service(service, swallow_exceptions=True):
     return "Success"
 
 
-@app.route("/api/1/<service>/stations")
+@app.route("/api/1/services/<service>/stations")
 def fetch_stations_for_service(service):
     if service not in scrapers:
         abort(404)
